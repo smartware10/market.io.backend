@@ -3,3 +3,4 @@
 .git
 src/__pycache__
 __pycache__
+src/market_db.sqlite3

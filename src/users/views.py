@@ -1,9 +1,10 @@
 from fastapi import APIRouter
 
-from src.users.schemas import CreateUser
-from src.users import crud
+from users.schemas import CreateUser
+from users import crud
 
 router = APIRouter(prefix="/users", tags=["Users"])
+
 
 @router.post("/")
 async def create_user(user: CreateUser):
