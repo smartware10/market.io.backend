@@ -19,10 +19,7 @@ async def lifespan(app: FastAPI):
     # Clean App
 
 
-app = FastAPI(
-    title="Market.io",
-    lifespan=lifespan,
-)
+app = FastAPI(title="Market.io", lifespan=lifespan)
 app.include_router(router=router_v1, prefix=settings.api_v1_prefix)
 app.include_router(router=users_router)
 
