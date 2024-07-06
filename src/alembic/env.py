@@ -29,7 +29,7 @@ target_metadata = Base.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-config.set_section_option("alembic", "sqlalchemy.url", settings.db_url)
+config.set_section_option("alembic", "sqlalchemy.url", settings.db.url)
 
 
 def run_migrations_offline() -> None:
