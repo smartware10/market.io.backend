@@ -15,3 +15,6 @@ class User(Base):
 
     posts: Mapped[list["Post"]] = relationship(back_populates="user")
     profile: Mapped["Profile"] = relationship(back_populates="user")
+
+    def __repr__(self) -> str:
+        return f"<User {self.username!r}>"
