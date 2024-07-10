@@ -4,3 +4,5 @@
 src/__pycache__
 __pycache__
 src/market_db.sqlite3
+/src/certs/jwt-public.pem
+/src/certs/jwt-private.pem
