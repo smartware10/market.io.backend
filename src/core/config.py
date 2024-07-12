@@ -1,15 +1,17 @@
 from pathlib import Path
-from pydantic import BaseModel
+from pydantic import BaseModel, PostgresDsn
 from pydantic_settings import BaseSettings
 
 BASE_DIR = Path(__file__).parent.parent
-DB_PATH = BASE_DIR / "market_db.sqlite3"
 
 
-class DbSettings(BaseModel):
+class DatabaseConfig(BaseModel):
     # DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    url: str = f"sqlite+aiosqlite:///{DB_PATH}"
+    url: PostgresDsn
     echo: bool = False
+    echo_pool: bool = False
+    pool_size: int = 50
+    max_overflow: int = 15
 
 
 class AuthJWT(BaseModel):
@@ -19,10 +21,13 @@ class AuthJWT(BaseModel):
     access_token_expire_minutes: int = 15
 
 
-class Settings(BaseSettings):
-    api_v1_prefix: str = "/api/v1"
+class ApiPrefix(BaseModel):
+    prefix: str = "/api"
 
-    db: DbSettings = DbSettings()
+
+class Settings(BaseSettings):
+    db: DatabaseConfig
+    api: ApiPrefix = ApiPrefix()
     auth_jwt: AuthJWT = AuthJWT()
 
 
