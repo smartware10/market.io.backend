@@ -10,7 +10,7 @@ router = APIRouter(tags=["Products"])
 
 @router.get("/", response_model=list[Product])
 async def get_products(
-    session: AsyncSession = Depends(db_helper.scope_session_dependency),
+    session: AsyncSession = Depends(db_helper.session_getter),
 ):
     return await crud.get_products(session)
 
@@ -27,7 +27,7 @@ async def get_product_by_id(product: Product = Depends(product_by_id)):
 )
 async def create_product(
     product_in: ProductCreate,
-    session: AsyncSession = Depends(db_helper.scope_session_dependency),
+    session: AsyncSession = Depends(db_helper.session_getter),
 ):
     return await crud.create_product(session=session, product_in=product_in)
 
@@ -36,7 +36,7 @@ async def create_product(
 async def update_product(
     product_update: ProductUpdate,
     product: Product = Depends(product_by_id),
-    session: AsyncSession = Depends(db_helper.scope_session_dependency),
+    session: AsyncSession = Depends(db_helper.session_getter),
 ):
     return await crud.update_product(
         session=session,
@@ -49,7 +49,7 @@ async def update_product(
 async def update_product_partial(
     product_update: ProductUpdatePartial,
     product: Product = Depends(product_by_id),
-    session: AsyncSession = Depends(db_helper.scope_session_dependency),
+    session: AsyncSession = Depends(db_helper.session_getter),
 ):
     return await crud.update_product(
         session=session,
@@ -62,6 +62,6 @@ async def update_product_partial(
 @router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_product(
     product: Product = Depends(product_by_id),
-    session: AsyncSession = Depends(db_helper.scope_session_dependency),
+    session: AsyncSession = Depends(db_helper.session_getter),
 ) -> None:
     await crud.delete_product(session=session, product=product)

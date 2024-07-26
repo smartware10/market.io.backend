@@ -6,3 +6,5 @@ __pycache__
 .db
 /src/certs/jwt-public.pem
 /src/certs/jwt-private.pem
+src/.env
+.env
