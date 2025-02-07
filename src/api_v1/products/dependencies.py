@@ -17,5 +17,5 @@ async def product_by_id(
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Product id:{product_id} not found.",
+        detail=f"Product id: {product_id} not found.",
     )

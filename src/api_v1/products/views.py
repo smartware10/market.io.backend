@@ -8,14 +8,22 @@ from .schemas import ProductCreate, Product, ProductUpdate, ProductUpdatePartial
 router = APIRouter(tags=["Products"])
 
 
-@router.get("/", response_model=list[Product])
+@router.get(
+    "/",
+    response_model=list[Product],
+    status_code=status.HTTP_200_OK,
+)
 async def get_products(
     session: AsyncSession = Depends(db_helper.session_getter),
 ):
     return await crud.get_products(session)
 
 
-@router.get("/{product_id}/", response_model=Product)
+@router.get(
+    "/{product_id}/",
+    response_model=Product,
+    status_code=status.HTTP_200_OK,
+)
 async def get_product_by_id(product: Product = Depends(product_by_id)):
     return product
 
@@ -59,7 +67,10 @@ async def update_product_partial(
     )
 
 
-@router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{product_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
 async def delete_product(
     product: Product = Depends(product_by_id),
     session: AsyncSession = Depends(db_helper.session_getter),
