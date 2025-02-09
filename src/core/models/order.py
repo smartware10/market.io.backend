@@ -5,13 +5,14 @@ from sqlalchemy import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
+from .mixins import IdIntPkMixin
 
 if TYPE_CHECKING:
     from .product import Product
     from .order_product_association import OrderProductAssociation
 
 
-class Order(Base):
+class Order(IdIntPkMixin, Base):
     promocode: Mapped[str | None]
     created_at: Mapped[datetime] = mapped_column(
         server_default=func.now(),
