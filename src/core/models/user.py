@@ -3,12 +3,13 @@ from typing import TYPE_CHECKING
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from fastapi_users.db import SQLAlchemyBaseUserTable
+from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
 
 from .base import Base
 from .mixins import IdIntPkMixin
 
 if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
     from .post import Post
     from .profile import Profile
 
@@ -21,3 +22,7 @@ class User(Base, IdIntPkMixin, SQLAlchemyBaseUserTable[int]):
 
     def __repr__(self) -> str:
         return f"<User {self.username!r}>"
+
+    @classmethod
+    def get_db(cls, session: "AsyncSession"):
+        return SQLAlchemyUserDatabase(session, User)
