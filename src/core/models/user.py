@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from fastapi_users.db import SQLAlchemyBaseUserTable
 
 from .base import Base
-from .mixins.id_int_pk import IdIntPkMixin
+from .mixins import IdIntPkMixin
 
 if TYPE_CHECKING:
     from .post import Post
