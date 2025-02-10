@@ -5,9 +5,8 @@ import uvicorn
 
 
 from core.config import settings
-from api_v1 import router as router_v1
+from api import router as api_router
 from core.models import db_helper
-from users.views import router as users_router
 
 
 @asynccontextmanager
@@ -20,8 +19,7 @@ async def lifespan(app: FastAPI):
 
 
 main_app = FastAPI(title="Market.io", lifespan=lifespan)
-main_app.include_router(router=router_v1, prefix=settings.api.prefix)
-main_app.include_router(router=users_router)
+main_app.include_router(router=api_router)
 
 
 @main_app.get("/")

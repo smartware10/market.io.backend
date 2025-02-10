@@ -1,6 +1,6 @@
 """  Create Read Update Delete """
 
-from users.schemas import CreateUser
+from api.api_v1.users.schemas import CreateUser
 
 
 async def create_user(user_in: CreateUser) -> dict:

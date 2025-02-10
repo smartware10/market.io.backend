@@ -1,11 +1,16 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from core.config import settings
 from core.models import db_helper
 from . import crud
 from .dependencies import product_by_id
 from .schemas import ProductCreate, Product, ProductUpdate, ProductUpdatePartial
 
-router = APIRouter(tags=["Products"])
+router = APIRouter(
+    prefix=settings.api.v1.products,
+    tags=["Products"],
+)
 
 
 @router.get(

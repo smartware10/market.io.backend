@@ -33,8 +33,15 @@ class AuthJWT(BaseModel):
     access_token_expire_minutes: int = 15
 
 
+class ApiV1Prefix(BaseModel):
+    prefix: str = "/v1"
+    users: str = "/users"
+    products: str = "/products"
+
+
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
+    v1: ApiV1Prefix = ApiV1Prefix()
 
 
 class Settings(BaseSettings):
