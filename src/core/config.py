@@ -35,6 +35,7 @@ class AuthJWT(BaseModel):
 
 class ApiV1Prefix(BaseModel):
     prefix: str = "/v1"
+    auth: str = "/auth"
     users: str = "/users"
     products: str = "/products"
 
@@ -46,8 +47,8 @@ class ApiPrefix(BaseModel):
 
 class AccessToken(BaseModel):
     lifetime_seconds: int = 3600
-    reset_password_token_secret: str
-    verification_token_secret: str
+    reset_password_token_secret: str = "SECRET_KEY"
+    verification_token_secret: str = "SECRET_KEY"
 
 
 class Settings(BaseSettings):
