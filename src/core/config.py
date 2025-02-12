@@ -5,6 +5,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 BASE_DIR = Path(__file__).parent.parent
 
 
+class RunConfig(BaseModel):
+    host: str = "localhost"
+    port: int = 8000
+
+
 class DatabaseConfig(BaseModel):
     url: PostgresDsn
     echo: bool = False
@@ -21,16 +26,11 @@ class DatabaseConfig(BaseModel):
     }
 
 
-class RunConfig(BaseModel):
-    host: str = "localhost"
-    port: int = 8000
-
-
 class AuthJWT(BaseModel):
     private_key_path: Path = BASE_DIR / "certs" / "jwt-private.pem"
     public_key_path: Path = BASE_DIR / "certs" / "jwt-public.pem"
     algorithm: str = "RS256"
-    access_token_expire_minutes: int = 15 * 60
+    access_token_expire_minutes: int = 60 * 60
 
 
 class ApiV1Prefix(BaseModel):
@@ -38,6 +38,9 @@ class ApiV1Prefix(BaseModel):
     auth: str = "/auth"
     users: str = "/users"
     products: str = "/products"
+
+    # Choose either 'db' or 'jwt' for API v1
+    authentication_backend_strategy: str = "jwt"
 
 
 class ApiPrefix(BaseModel):
