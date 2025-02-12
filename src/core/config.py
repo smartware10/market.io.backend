@@ -54,8 +54,8 @@ class ApiPrefix(BaseModel):
 
 class AccessToken(BaseModel):
     lifetime_seconds: int = 3600
-    reset_password_token_secret: str = "SECRET_KEY"
-    verification_token_secret: str = "SECRET_KEY"
+    reset_password_token_secret: str
+    verification_token_secret: str
 
 
 class Settings(BaseSettings):
@@ -70,7 +70,7 @@ class Settings(BaseSettings):
     api: ApiPrefix = ApiPrefix()
     auth_jwt: AuthJWT = AuthJWT()
     db: DatabaseConfig
-    access_token: AccessToken = AccessToken()
+    access_token: AccessToken
 
 
 settings = Settings()
