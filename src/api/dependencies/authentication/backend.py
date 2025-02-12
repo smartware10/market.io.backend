@@ -20,7 +20,9 @@ STRATEGIES = {
 strategy_config = STRATEGIES.get(settings.api.v1.authentication_backend_strategy)
 
 if strategy_config is None:
-    raise ValueError("Invalid strategy selected! Choose either 'db' or 'jwt'.")
+    raise ValueError(
+        "Invalid strategy selected! Choose either 'db' or 'jwt' from configuration."
+    )
 
 authentication_backend = AuthenticationBackend(
     name=strategy_config["name"],
