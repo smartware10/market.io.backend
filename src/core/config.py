@@ -38,6 +38,7 @@ class ApiV1Prefix(BaseModel):
     auth: str = "/auth"
     users: str = "/users"
     products: str = "/products"
+    categories: str = "/categories"
 
     # Choose either 'db' or 'jwt' for API v1
     authentication_backend_strategy: str = "jwt"
