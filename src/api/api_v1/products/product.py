@@ -56,10 +56,10 @@ async def get_product_by_id(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_product(
-    # current_user: Annotated[
-    #     "User",
-    #     Depends(current_active_superuser),
-    # ],
+    current_user: Annotated[
+        "User",
+        Depends(current_active_superuser),
+    ],
     session: Annotated[
         "AsyncSession",
         Depends(db_helper.session_getter),
