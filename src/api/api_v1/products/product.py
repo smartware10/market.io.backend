@@ -10,13 +10,14 @@ from core.schemas.product import (
     ProductUpdatePartial,
 )
 
-from api.dependencies.products import product_by_id
 from api.api_v1.auth.fastapi_users_router import current_active_superuser
+from api.dependencies.products import product_by_id
 from . import crud
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
     from core.models import User
+
 
 router = APIRouter()
 
@@ -55,15 +56,15 @@ async def get_product_by_id(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_product(
-    current_user: Annotated[
-        "User",
-        Depends(current_active_superuser),
-    ],
-    product_in: ProductCreate,
+    # current_user: Annotated[
+    #     "User",
+    #     Depends(current_active_superuser),
+    # ],
     session: Annotated[
         "AsyncSession",
         Depends(db_helper.session_getter),
     ],
+    product_in: ProductCreate,
 ):
     return await crud.create_product(
         session=session,

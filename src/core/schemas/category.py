@@ -32,18 +32,10 @@ class Category(CategoryBase):
     id: int | None = None
 
 
-class SubCategory(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int | None = None
-    name: str | None = None
-    description: str | None = None
-
-
 class SubCategoryBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     name: str
     description: Optional[str] = None
-    subcategories: Optional[list[SubCategory]] = None
+    subcategories: Optional[list[Category]] = None

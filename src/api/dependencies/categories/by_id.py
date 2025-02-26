@@ -1,8 +1,6 @@
 from typing import TYPE_CHECKING, Annotated
-
 from fastapi import Depends, HTTPException, status, Path
 
-from api.api_v1.categories import crud
 from core.models import db_helper, Category
 
 if TYPE_CHECKING:
@@ -16,10 +14,7 @@ async def category_by_id(
         Depends(db_helper.session_getter),
     ],
 ) -> Category:
-    category = await crud.get_category_by_id(
-        session=session,
-        category_id=category_id,
-    )
+    category = await session.get(Category, category_id)
     if category:
         return category
 

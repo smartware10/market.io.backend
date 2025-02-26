@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from core.models import Category
-from core.schemas.category import CategoryCreate
+from core.schemas.category import CategoryCreate, SubCategoryBase
 
 
 async def get_all_categories(session: AsyncSession) -> list[Category]:
@@ -22,28 +22,9 @@ async def get_all_categories(session: AsyncSession) -> list[Category]:
 async def get_category_with_subcategories(
     session: AsyncSession,
     category: Category,
-):
+) -> SubCategoryBase:
     await session.refresh(category, ["subcategories"])
-    return {
-        "id": category.id,
-        "name": category.name,
-        "description": category.description,
-        "subcategories": [
-            {
-                "id": sub.id,
-                "name": sub.name,
-                "description": sub.description,
-            }
-            for sub in category.subcategories
-        ],
-    }
-
-
-async def get_category_by_id(
-    session: AsyncSession,
-    category_id: int,
-) -> Optional[Category]:
-    return await session.get(Category, category_id)
+    return SubCategoryBase.model_validate(category)
 
 
 async def create_category(

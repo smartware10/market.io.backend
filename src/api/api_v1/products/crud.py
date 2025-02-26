@@ -1,12 +1,12 @@
 """  Create Read Update Delete """
 
-from typing import Optional
-
+from fastapi import HTTPException
 from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
+from starlette import status
 
-from core.models import Product
+from core.models import Product, Category
 from core.schemas.product import ProductCreate, ProductUpdate, ProductUpdatePartial
 
 
@@ -17,17 +17,17 @@ async def get_products(session: AsyncSession) -> list[Product]:
     return list(products)
 
 
-async def get_product_by_id(
-    session: AsyncSession,
-    product_id: int,
-) -> Optional[Product]:
-    return await session.get(Product, product_id)
-
-
 async def create_product(
     session: AsyncSession,
     product_in: ProductCreate,
 ) -> Product:
+    category = await session.get(Category, product_in.category_id)
+    if category is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Category id: {product_in.category_id} not found.",
+        )
+
     product = Product(**product_in.model_dump())
     session.add(product)
     await session.commit()

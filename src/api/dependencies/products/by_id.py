@@ -1,8 +1,6 @@
-from typing import Annotated, TYPE_CHECKING
-
+from typing import TYPE_CHECKING, Annotated
 from fastapi import Depends, HTTPException, status, Path
 
-from api.api_v1.products import crud
 from core.models import db_helper, Product
 
 if TYPE_CHECKING:
@@ -16,10 +14,7 @@ async def product_by_id(
         Depends(db_helper.session_getter),
     ],
 ) -> Product:
-    product = await crud.get_product_by_id(
-        session=session,
-        product_id=product_id,
-    )
+    product = await session.get(Product, product_id)
     if product:
         return product
 

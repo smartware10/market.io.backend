@@ -1,15 +1,26 @@
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
 from core.schemas.category import Category
 
 
 class ProductBase(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     name: str
     description: str
     price: int
     category_id: int
+
+    @field_validator("category_id", "price", mode="before")
+    def check_category_id(cls, value):
+        # Преобразуем значение в int, если оно строковое
+        if value is not None:
+            value = int(value)  # Преобразуем в int перед проверкой
+            if value <= 0:
+                raise ValueError("Price and CategoryID must be a positive integer.")
+        return value
 
 
 class ProductCreate(ProductBase):
@@ -28,7 +39,5 @@ class ProductUpdatePartial(ProductCreate):
 
 
 class Product(ProductBase):
-    model_config = ConfigDict(from_attributes=True)
-
     category: Optional[Category]
     id: int
