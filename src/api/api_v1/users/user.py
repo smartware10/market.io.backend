@@ -55,7 +55,7 @@ async def get_user(
     ],
 ):
     return {
-        "User": UserRead.model_validate(user),
+        "user": UserRead.model_validate(user),
     }
 
 
