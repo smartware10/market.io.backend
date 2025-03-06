@@ -1,11 +1,25 @@
-# Issue RSA private key + public key pair
+## Генерація RSA-ключової пари
+Цей репозиторій містить інструкцію щодо створення приватного та публічного ключів RSA, які можуть бути використані, наприклад, для підпису та верифікації JWT-токенів.
+
+### Генерація приватного ключа
+Виконайте наступну команду, щоб згенерувати приватний ключ довжиною 2048 біт:
 
 ```bash
-# Generate an RSA private key, of size 2048
 openssl genrsa -out jwt-private.pem 2048
 ```
 
+### Генерація публічного ключа
+Для отримання публічного ключа з приватного виконайте:
+
 ```bash
-# Extract the public key from the key pair, which can be used in a certificate
 openssl rsa -in jwt-private.pem -outform PEM -pubout -out jwt-public.pem
 ```
+
+## Використання
+
+#### 1. Підписання JWT
+- Використовуйте приватний ключ jwt-private.pem для підписання токенів.
+
+#### 4. Перевірка JWT
+- Використовуйте публічний ключ jwt-public.pem для перевірки підпису токенів.
+
