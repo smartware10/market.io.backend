@@ -27,13 +27,13 @@ cd market.io.backend
 pip install poetry
 ```
 
-### 3. Створення віртуального середовища та активація
+### 3. Створення віртуального середовища та його активація
 
 ```bash
 python -m venv .venv
 ```
 
-#### Активація:
+####  Активація:
 - Для **Linux/MacOS**:
 ```bash
 source .venv/bin/activate
