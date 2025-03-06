@@ -27,13 +27,12 @@ cd market.io.backend
 pip install poetry
 ```
 
-### 3. Створення віртуального середовища
+### 3. Створення віртуального середовища та активація
 
 ```bash
 python -m venv .venv
 ```
 
-А потім активуй його:
 - Для **Linux/MacOS**:
 ```bash
 source .venv/bin/activate
@@ -78,7 +77,7 @@ python main.py
 http://127.0.0.1:8000
 
 
-### API Документація
+## API Документація
 Документацію можна переглянути у браузері:
 
 - Swagger UI: http://127.0.0.1:8000/docs
