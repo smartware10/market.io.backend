@@ -33,6 +33,7 @@ pip install poetry
 python -m venv .venv
 ```
 
+#### Активація:
 - Для **Linux/MacOS**:
 ```bash
 source .venv/bin/activate
