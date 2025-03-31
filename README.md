@@ -56,7 +56,7 @@ poetry install
 
 ### 7. Запуск бази даних через Docker Compose
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 8. Виконання міграцій
