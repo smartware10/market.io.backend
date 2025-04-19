@@ -10,6 +10,16 @@ class RunConfig(BaseModel):
     port: int = 8000
 
 
+class MiddlewareConfig(BaseModel):
+    allow_origins: list[str] = [
+        "http://localhost",
+        "http://localhost:3000",
+    ]
+    allow_credentials: bool = True
+    allow_methods: list[str] = ["*"]
+    allow_headers: list[str] = ["*"]
+
+
 class DatabaseConfig(BaseModel):
     url: PostgresDsn
     echo: bool = False
@@ -71,6 +81,7 @@ class Settings(BaseSettings):
     )
 
     run: RunConfig = RunConfig()
+    middleware: MiddlewareConfig = MiddlewareConfig()
     api: ApiPrefix = ApiPrefix()
     auth_jwt: AuthJWT = AuthJWT()
     db: DatabaseConfig

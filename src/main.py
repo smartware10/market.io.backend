@@ -1,5 +1,8 @@
 from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 import uvicorn
 
@@ -10,9 +13,8 @@ from core.models import db_helper
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Load App
-
     yield
     # Exit App
     await db_helper.dispose()
@@ -21,10 +23,14 @@ async def lifespan(app: FastAPI):
 main_app = FastAPI(title="Market.io", lifespan=lifespan)
 main_app.include_router(router=api_router)
 
-
-@main_app.get("/")
-async def root():
-    return {"message": "Market.io"}
+# Добавление CORS middleware
+main_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.middleware.allow_origins,
+    allow_credentials=settings.middleware.allow_credentials,
+    allow_methods=settings.middleware.allow_methods,
+    allow_headers=settings.middleware.allow_headers,
+)
 
 
 if __name__ == "__main__":
