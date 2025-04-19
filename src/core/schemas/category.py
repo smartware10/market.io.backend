@@ -29,7 +29,7 @@ class CategoryUpdate(CategoryCreate):
 
 
 class Category(CategoryBase):
-    id: int | None = None
+    id: int
 
 
 class SubCategoryBase(BaseModel):
