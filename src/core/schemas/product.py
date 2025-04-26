@@ -2,12 +2,11 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, field_validator
 
-from core.schemas.category import Category
-
 
 class ProductBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
+    id: int
     name: str
     description: str
     price: int
@@ -39,5 +38,4 @@ class ProductUpdatePartial(ProductCreate):
 
 
 class Product(ProductBase):
-    category: Optional[Category]
-    id: int
+    pass

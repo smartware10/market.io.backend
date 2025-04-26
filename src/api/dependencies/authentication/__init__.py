@@ -1,3 +1,7 @@
-__all__ = ("authentication_backend",)
+__all__ = (
+    "get_authentication_backend",
+    "get_user_manager",
+)
 
-from .backend import authentication_backend
+from .auth_strategy_factory import get_authentication_backend
+from .user_manager import get_user_manager

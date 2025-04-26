@@ -2,7 +2,8 @@ from typing import Annotated, TYPE_CHECKING
 
 from fastapi import APIRouter, Depends, status
 
-from core.models import db_helper
+from api.common import get_current_user
+from core.helpers import db_helper
 from core.schemas.product import (
     Product,
     ProductCreate,
@@ -10,7 +11,6 @@ from core.schemas.product import (
     ProductUpdatePartial,
 )
 
-from api.api_v1.auth.fastapi_users_router import current_active_superuser
 from api.dependencies.products import product_by_id
 from . import crud
 
@@ -26,6 +26,7 @@ router = APIRouter()
     "/",
     response_model=list[Product],
     status_code=status.HTTP_200_OK,
+    name="products:get all products",
 )
 async def get_products(
     session: Annotated[
@@ -58,7 +59,7 @@ async def get_product_by_id(
 async def create_product(
     current_user: Annotated[
         "User",
-        Depends(current_active_superuser),
+        get_current_user("v1", superuser=True),
     ],
     session: Annotated[
         "AsyncSession",
@@ -76,7 +77,7 @@ async def create_product(
 async def update_product(
     current_user: Annotated[
         "User",
-        Depends(current_active_superuser),
+        get_current_user("v1", superuser=True),
     ],
     product_update: ProductUpdate,
     product: Annotated[
@@ -99,7 +100,7 @@ async def update_product(
 async def update_product_partial(
     current_user: Annotated[
         "User",
-        Depends(current_active_superuser),
+        get_current_user("v1", superuser=True),
     ],
     product_update: ProductUpdatePartial,
     product: Annotated[
@@ -126,7 +127,7 @@ async def update_product_partial(
 async def delete_product(
     current_user: Annotated[
         "User",
-        Depends(current_active_superuser),
+        get_current_user("v1", superuser=True),
     ],
     product: Annotated[
         "Product",

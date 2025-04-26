@@ -1,71 +1,33 @@
-from typing import Annotated, TYPE_CHECKING
+from typing import Annotated, TYPE_CHECKING, List
 
 from fastapi import APIRouter, Depends
-from sqlalchemy import select
+from starlette import status
 
-from api.api_v1.auth.fastapi_users_router import (
-    fastapi_users,
-    current_active_user,
-    current_active_superuser,
-)
-from core.models import User, db_helper
-from core.schemas.user import UserRead, UserUpdate
+from api.common import get_current_user
+from api.dependencies import crud as common_crud
+from core.helpers import db_helper, reset_database_helper
+from core.models import User as UserModel
+from core.schemas.user import UserRead
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 router = APIRouter()
 
-# /me
-router.include_router(
-    router=fastapi_users.get_users_router(
-        UserRead,
-        UserUpdate,
-        requires_verification=True,
-    ),
+
+@router.get(
+    "/all_users/",
+    name="users:get all users",
+    status_code=status.HTTP_200_OK,
+    response_model=List[UserRead],
 )
-
-
-@router.get("/all_users/")
 async def get_all_users(
     current_user: Annotated[
-        "User",
-        Depends(current_active_superuser),
+        "UserModel",
+        get_current_user("v1", superuser=True),
     ],
-    users_db: Annotated[
+    session: Annotated[
         "AsyncSession",
         Depends(db_helper.session_getter),
     ],
 ):
-    # Асинхронный запрос для получения всех пользователей
-    result = await users_db.execute(select(User).order_by(User.id))
-    users = result.scalars().all()  # Получаем все записи пользователей
-    return [
-        {
-            "admin": UserRead.model_validate(current_user),
-        },
-        {"all_users": [UserRead.model_validate(user) for user in users]},
-    ]
-
-
-@router.get("/")
-async def get_user(
-    user: Annotated[
-        User,
-        Depends(current_active_user),
-    ],
-):
-    return {
-        "user": UserRead.model_validate(user),
-    }
-
-
-@router.get("/admin")
-async def get_user(
-    user: Annotated[
-        User,
-        Depends(current_active_superuser),
-    ],
-):
-    return {
-        "User": UserRead.model_validate(user),
-    }
+    return await common_crud.get_all(session=session, model=UserModel)

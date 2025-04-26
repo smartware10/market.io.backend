@@ -1,4 +1,6 @@
 from pathlib import Path
+from typing import Literal
+
 from pydantic import BaseModel, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -51,19 +53,21 @@ class ApiV1Prefix(BaseModel):
     categories: str = "/categories"
 
     # Choose either 'db' or 'jwt' for API v1
-    authentication_backend_strategy: str = "jwt"
+    authentication_backend_strategy: Literal["db", "jwt"] = "jwt"
+
+
+class ApiV2Prefix(BaseModel):
+    prefix: str = "/v2"
+    auth: str = "/auth"
+
+    # Choose either 'db' or 'jwt' for API v2
+    authentication_backend_strategy: Literal["db", "jwt"] = "db"
 
 
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
     v1: ApiV1Prefix = ApiV1Prefix()
-
-    @property
-    def bearer_token_url(self) -> str:
-        # /api/v1/auth/login
-        parts = (self.prefix, self.v1.prefix, self.v1.auth, "/login")
-        path = "".join(parts)
-        return path.removeprefix("/")
+    v2: ApiV2Prefix = ApiV2Prefix()
 
 
 class AccessToken(BaseModel):
@@ -89,3 +93,12 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+def get_token_url(version: str) -> str:
+    # /api/{version}/auth/login
+    api = settings.api
+    version_config = getattr(api, version)
+
+    parts = [api.prefix, version_config.prefix, version_config.auth, "/login"]
+    return "".join(parts).removeprefix("/")

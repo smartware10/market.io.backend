@@ -1,13 +1,20 @@
-from typing import Annotated, TYPE_CHECKING
+from typing import Annotated, TYPE_CHECKING, List
 
 from fastapi import APIRouter, Depends
 from starlette import status
 
-from core.models import db_helper
-from core.schemas.category import Category, CategoryCreate, SubCategoryBase
+from api.common import get_current_user
+from api.dependencies import crud as common_crud
+from core.helpers import db_helper
+from core.models import Category as CategoryModel
+from core.schemas.category import (
+    Category,
+    CategoryWithProduct,
+    CategoryCreate,
+    SubCategoryBase,
+)
 
 from api.dependencies.categories import category_by_id
-from api.api_v1.auth.fastapi_users_router import current_active_superuser
 from . import crud
 
 if TYPE_CHECKING:
@@ -19,7 +26,7 @@ router = APIRouter()
 
 @router.get(
     "/",
-    response_model=list[Category],
+    response_model=List[Category],
     status_code=status.HTTP_200_OK,
     name="categories:get all categories",
 )
@@ -29,7 +36,22 @@ async def get_all_categories(
         Depends(db_helper.session_getter),
     ]
 ):
-    return await crud.get_all_categories(session=session)
+    return await common_crud.get_all(session=session, model=CategoryModel)
+
+
+@router.get(
+    "/all/",
+    response_model=list[CategoryWithProduct],
+    status_code=status.HTTP_200_OK,
+    name="categories:get all categories with products",
+)
+async def get_all_categories_with_products(
+    session: Annotated[
+        "AsyncSession",
+        Depends(db_helper.session_getter),
+    ]
+):
+    return await crud.get_all_categories_with_products(session=session)
 
 
 @router.get(
@@ -56,7 +78,7 @@ async def get_category_by_id(
 async def add_category(
     current_user: Annotated[
         "User",
-        Depends(current_active_superuser),
+        get_current_user("v1", superuser=True),
     ],
     schema: CategoryCreate,
     session: Annotated[

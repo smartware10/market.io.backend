@@ -1,11 +1,15 @@
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, field_validator
+
+if TYPE_CHECKING:
+    from .product import Product
 
 
 class CategoryBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
+    id: int
     name: str
     description: Optional[str] = None
     parent_id: Optional[int] = None
@@ -28,8 +32,12 @@ class CategoryUpdate(CategoryCreate):
     pass
 
 
+class CategoryWithProduct(CategoryBase):
+    products: Optional[list["Product"]] = None
+
+
 class Category(CategoryBase):
-    id: int
+    pass
 
 
 class SubCategoryBase(BaseModel):
@@ -38,4 +46,4 @@ class SubCategoryBase(BaseModel):
     id: int
     name: str
     description: Optional[str] = None
-    subcategories: Optional[list[Category]] = None
+    subcategories: Optional[list["Category"]] = None

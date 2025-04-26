@@ -1,7 +1,8 @@
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, Type
 from fastapi import Depends, HTTPException, status, Path
 
-from core.models import db_helper, Product
+from core.models import Product
+from core.helpers import db_helper
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,7 +14,7 @@ async def product_by_id(
         "AsyncSession",
         Depends(db_helper.session_getter),
     ],
-) -> Product:
+) -> Type[Product]:
     product = await session.get(Product, product_id)
     if product:
         return product

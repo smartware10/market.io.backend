@@ -1,11 +1,10 @@
 """  Create Read Update Delete """
 
-from typing import Optional
-
 from fastapi import HTTPException
 from sqlalchemy import select, Result
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from starlette import status
 
 from core.models import Category
@@ -14,6 +13,15 @@ from core.schemas.category import CategoryCreate, SubCategoryBase
 
 async def get_all_categories(session: AsyncSession) -> list[Category]:
     stmt = select(Category).order_by(Category.id)
+    result: Result = await session.execute(stmt)
+    categories = result.scalars().all()
+    return list(categories)
+
+
+async def get_all_categories_with_products(session: AsyncSession) -> list[Category]:
+    stmt = (
+        select(Category).options(selectinload(Category.products)).order_by(Category.id)
+    )
     result: Result = await session.execute(stmt)
     categories = result.scalars().all()
     return list(categories)
