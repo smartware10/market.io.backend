@@ -1,15 +1,14 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
+import uvicorn
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-import uvicorn
-
-
 from core.config import settings
 from api import router as api_router
-from core.models import db_helper
+from core.helpers import db_helper
 
 
 @asynccontextmanager
