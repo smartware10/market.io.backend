@@ -27,7 +27,7 @@ async def create_product(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Category id: {product_in.category_id} not found.",
         )
-
+    product_in.id = None
     product = Product(**product_in.model_dump())
     session.add(product)
     await session.commit()

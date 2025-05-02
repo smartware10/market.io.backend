@@ -7,4 +7,4 @@ router = APIRouter(
     prefix=settings.api.v2.prefix,
 )
 
-router.include_router(router=auth_router)
+# router.include_router(router=auth_router)

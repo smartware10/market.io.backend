@@ -15,8 +15,13 @@ def get_current_user(
         from core.config import settings, get_token_url
 
         # Выбираем стратегию для версии и URL
-        strategy = getattr(settings.api, version_api).authentication_backend_strategy
-        token_url = get_token_url(version_api)
+        try:
+            strategy = getattr(
+                settings.api, version_api
+            ).authentication_backend_strategy
+            token_url = get_token_url(version_api)
+        except AttributeError:
+            raise ValueError(f"Invalid version API selected!. Got: {version_api}")
 
         # Создаем authentication_backend
         authentication_backend = get_authentication_backend(strategy, token_url)

@@ -1,20 +1,18 @@
-from typing import TYPE_CHECKING, Annotated, Type
+from typing import Annotated
 from fastapi import Depends, HTTPException, status, Path
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Category
 from core.helpers import db_helper
 
-if TYPE_CHECKING:
-    from sqlalchemy.ext.asyncio import AsyncSession
-
 
 async def category_by_id(
-    category_id: Annotated[int, Path],
     session: Annotated[
-        "AsyncSession",
+        AsyncSession,
         Depends(db_helper.session_getter),
     ],
-) -> Type[Category]:
+    category_id: Annotated[int, Path(..., gt=0)],
+) -> Category:
     category = await session.get(Category, category_id)
     if category:
         return category

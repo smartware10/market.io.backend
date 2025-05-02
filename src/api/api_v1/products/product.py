@@ -1,8 +1,10 @@
-from typing import Annotated, TYPE_CHECKING
+from typing import Annotated, TYPE_CHECKING, List
 
 from fastapi import APIRouter, Depends, status
 
 from api.common import get_current_user
+from api.dependencies import crud as crud_common
+from core.models import Product as ProductModel
 from core.helpers import db_helper
 from core.schemas.product import (
     Product,
@@ -24,17 +26,17 @@ router = APIRouter()
 
 @router.get(
     "/",
-    response_model=list[Product],
+    response_model=List[Product],
     status_code=status.HTTP_200_OK,
     name="products:get all products",
 )
-async def get_products(
+async def get_all_products(
     session: Annotated[
         "AsyncSession",
         Depends(db_helper.session_getter),
     ]
 ):
-    return await crud.get_products(session=session)
+    return await crud_common.get_all_object(session=session, model=ProductModel)
 
 
 @router.get(

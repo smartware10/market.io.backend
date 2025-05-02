@@ -7,7 +7,7 @@ from sqlalchemy.orm import DeclarativeBase
 T = TypeVar("T", bound=DeclarativeBase)
 
 
-async def get_all(session: AsyncSession, model: Type[T]) -> List[T]:
+async def get_all_object(session: AsyncSession, model: Type[T]) -> List[T]:
     stmt = select(model).order_by(model.id)
     result: Result = await session.execute(stmt)
     data = result.scalars().all()

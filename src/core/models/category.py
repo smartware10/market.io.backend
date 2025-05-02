@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -26,11 +26,11 @@ class Category(Base, IdIntPkMixin):
         backref="subcategories",
     )
 
-    products: Mapped[list["Product"]] = relationship(
+    products: Mapped[List["Product"]] = relationship(
         "Product",
         back_populates="category",
         cascade="all, delete",
     )
 
     def __repr__(self):
-        return f"Category(id={self.id}, name={self.name}, parent_id={self.parent_id})"
+        return f"Category(id={self.id}, name={self.name}, description={self.description}, parent_id={self.parent_id})"

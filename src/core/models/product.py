@@ -34,7 +34,7 @@ class Product(Base, IdIntPkMixin):
     )
 
     def __repr__(self):
-        return f"Product(id={self.id}, name={self.name}, price={self.price}, category_id={self.category_id})"
+        return f"Product(id={self.id}, name={self.name}, description={self.description}, price={self.price}, category_id={self.category_id})"
 
     # secondary
     # orders: Mapped[list["Order"]] = relationship(

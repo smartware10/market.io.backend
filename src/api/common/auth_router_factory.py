@@ -8,14 +8,17 @@ from core.schemas.user import UserCreate, UserUpdate, UserRead
 from api.dependencies.authentication import get_authentication_backend, get_user_manager
 
 
-def get_auth_router(version: str) -> APIRouter:
+def get_auth_router(version_api: str) -> APIRouter:
     from core.config import settings, get_token_url
 
     router = APIRouter()
 
     # Выбираем стратегию для версии и URL
-    strategy = getattr(settings.api, version).authentication_backend_strategy
-    token_url = get_token_url(version)
+    try:
+        strategy = getattr(settings.api, version_api).authentication_backend_strategy
+        token_url = get_token_url(version_api)
+    except AttributeError:
+        raise AttributeError(f"Invalid version API selected!. Got: {version_api}")
 
     # Создаем authentication_backend
     authentication_backend = get_authentication_backend(strategy, token_url)

@@ -1,5 +1,5 @@
-from .category import CategoryWithProduct
+from .category import CategoryReadWithProduct
 from .product import Product
 
-CategoryWithProduct.model_rebuild()
+CategoryReadWithProduct.model_rebuild()
 Product.model_rebuild()

@@ -1,3 +1,3 @@
-__all__ = ("get_all",)
+__all__ = ("get_all_object",)
 
-from .get_all import get_all
+from .get_all_object import get_all_object
