@@ -14,23 +14,18 @@ if TYPE_CHECKING:
 
 
 class Product(Base, IdIntPkMixin):
-
     name: Mapped[str] = mapped_column(String(128), index=True)
     description: Mapped[str] = mapped_column(String(512))
     price: Mapped[int] = mapped_column(Integer, index=True)
 
     category_id: Mapped[int] = mapped_column(
-        Integer,
-        ForeignKey(
-            "categories.id",
-            ondelete="CASCADE",
-        ),
+        ForeignKey("categories.id", ondelete="CASCADE"),
         nullable=False,
     )
+
     category: Mapped["Category"] = relationship(
         "Category",
         back_populates="products",
-        lazy="joined",
     )
 
     def __repr__(self):

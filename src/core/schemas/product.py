@@ -1,6 +1,5 @@
-from typing import Optional
-
-from pydantic import BaseModel, ConfigDict, field_validator, Field
+from typing import Optional, List
+from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 
 class ProductBase(BaseModel):
@@ -23,7 +22,7 @@ class ProductBase(BaseModel):
         min_length=3,
     )
     price: int = Field(
-        ..., title="Цена", description="Цена товара в рублях", examples=[19990], gt=0
+        ..., title="Цена", description="Цена товара", examples=[19990], gt=0
     )
     category_id: int = Field(
         ...,
@@ -33,24 +32,28 @@ class ProductBase(BaseModel):
         gt=0,
     )
 
-    @field_validator("category_id", "price", mode="before")
-    def check_category_id(cls, value):
-        if value is not None:
-            value = int(value)
-            if value <= 0:
-                raise ValueError("Price and CategoryID must be a positive integer.")
-        return value
+
+class ProductReadList(RootModel[List["ProductRead"]]):
+    """Схема для чтения списка продуктов"""
+
+    pass
 
 
 class ProductCreate(ProductBase):
+    """Схема для создания продукта"""
+
     pass
 
 
 class ProductUpdate(ProductCreate):
+    """Схема для обновления продукта"""
+
     pass
 
 
 class ProductUpdatePartial(ProductBase):
+    """Схема для частичного обновления продукта"""
+
     name: Optional[str] = Field(
         default=None,
         title="Название товара",
@@ -83,7 +86,9 @@ class ProductUpdatePartial(ProductBase):
     )
 
 
-class Product(ProductBase):
+class ProductRead(ProductBase):
+    """Схема для чтения продукта"""
+
     id: int = Field(
         ...,
         title="ID товара",
@@ -91,3 +96,8 @@ class Product(ProductBase):
         gt=0,
         examples=[101],
     )
+
+
+from .category import CategoryReadWithProduct
+
+ProductRead.model_rebuild()

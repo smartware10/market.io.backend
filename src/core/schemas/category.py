@@ -1,8 +1,8 @@
 from typing import Optional, TYPE_CHECKING, List
-from pydantic import BaseModel, RootModel, ConfigDict, field_validator, Field
+from pydantic import BaseModel, RootModel, ConfigDict, Field
 
 if TYPE_CHECKING:
-    from .product import Product
+    from .product import ProductRead
 
 
 class CategoryBase(BaseModel):
@@ -31,23 +31,16 @@ class CategoryBase(BaseModel):
         examples=[1],
     )
 
-    @field_validator("parent_id", mode="before")
-    def check_parent_category(cls, value):
-        # Преобразуем значение в int, если оно строковое
-        if value is not None:
-            value = int(value)
-            if value <= 0:
-                raise ValueError(
-                    "ID родительской категории должен быть положительным числом."
-                )
-        return value
-
 
 class CategoryReadList(RootModel[List["CategoryRead"]]):
+    """Схема для чтения списка категорий"""
+
     pass
 
 
 class CategoryReadListWithProducts(RootModel[List["CategoryReadWithProduct"]]):
+    """Схема для чтения списка категорий с продуктами"""
+
     pass
 
 
@@ -70,12 +63,14 @@ class CategoryRead(CategoryBase):
         ...,
         title="ID категории",
         description="Уникальный идентификатор категории.",
-        examples=[5],
+        examples=[3],
         gt=0,
     )
 
 
 class SubCategoryBase(CategoryRead):
+    """Схема для чтения подкатегорий выбраной категории"""
+
     subcategories: Optional[List["CategoryRead"]] = Field(
         default=None,
         title="Подкатегории",
@@ -84,8 +79,15 @@ class SubCategoryBase(CategoryRead):
 
 
 class CategoryReadWithProduct(CategoryRead):
-    products: Optional[List["Product"]] = Field(
+    """Схема для чтения категории со списком продуктов"""
+
+    products: Optional[List["ProductRead"]] = Field(
         default=None,
         title="Продукты категории",
         description="Список продуктов, связанных с этой категорией.",
     )
+
+
+from .product import ProductRead
+
+CategoryReadWithProduct.model_rebuild()

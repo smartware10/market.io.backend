@@ -7,8 +7,9 @@ from api.dependencies import crud as crud_common
 from core.models import Product as ProductModel
 from core.helpers import db_helper
 from core.schemas.product import (
-    Product,
     ProductCreate,
+    ProductRead,
+    ProductReadList,
     ProductUpdate,
     ProductUpdatePartial,
 )
@@ -18,7 +19,7 @@ from . import crud
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
-    from core.models import User
+    from core.models import User as UserModel
 
 
 router = APIRouter()
@@ -26,7 +27,7 @@ router = APIRouter()
 
 @router.get(
     "/",
-    response_model=List[Product],
+    response_model=ProductReadList,
     status_code=status.HTTP_200_OK,
     name="products:get all products",
 )
@@ -41,12 +42,12 @@ async def get_all_products(
 
 @router.get(
     "/{product_id}/",
-    response_model=Product,
+    response_model=ProductRead,
     status_code=status.HTTP_200_OK,
 )
 async def get_product_by_id(
     product: Annotated[
-        "Product",
+        "ProductModel",
         Depends(product_by_id),
     ]
 ):
@@ -55,12 +56,12 @@ async def get_product_by_id(
 
 @router.post(
     "/",
-    response_model=Product,
+    response_model=ProductRead,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_product(
     current_user: Annotated[
-        "User",
+        "UserModel",
         get_current_user("v1", superuser=True),
     ],
     session: Annotated[
@@ -78,12 +79,12 @@ async def create_product(
 @router.put("/{product_id}")
 async def update_product(
     current_user: Annotated[
-        "User",
+        "UserModel",
         get_current_user("v1", superuser=True),
     ],
     product_update: ProductUpdate,
     product: Annotated[
-        "Product",
+        "ProductModel",
         Depends(product_by_id),
     ],
     session: Annotated[
@@ -101,12 +102,12 @@ async def update_product(
 @router.patch("/{product_id}")
 async def update_product_partial(
     current_user: Annotated[
-        "User",
+        "UserModel",
         get_current_user("v1", superuser=True),
     ],
     product_update: ProductUpdatePartial,
     product: Annotated[
-        "Product",
+        "ProductModel",
         Depends(product_by_id),
     ],
     session: Annotated[
@@ -128,11 +129,11 @@ async def update_product_partial(
 )
 async def delete_product(
     current_user: Annotated[
-        "User",
+        "UserModel",
         get_current_user("v1", superuser=True),
     ],
     product: Annotated[
-        "Product",
+        "ProductModel",
         Depends(product_by_id),
     ],
     session: Annotated[

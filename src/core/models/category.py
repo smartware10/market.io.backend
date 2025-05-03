@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -14,22 +14,32 @@ class Category(Base, IdIntPkMixin):
     __tablename__ = "categories"
 
     name: Mapped[str] = mapped_column(String(32), unique=True, index=True)
-    description: Mapped[str] = mapped_column(String(128))
+    description: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
 
-    parent_id: Mapped[int] = mapped_column(
+    parent_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("categories.id"),
         nullable=True,
     )
-    parent: Mapped["Category"] = relationship(
+
+    # Отношение к родительской категории
+    parent: Mapped[Optional["Category"]] = relationship(
         "Category",
         remote_side="Category.id",
-        backref="subcategories",
+        back_populates="subcategories",
     )
 
+    # Список подкатегорий
+    subcategories: Mapped[List["Category"]] = relationship(
+        "Category",
+        back_populates="parent",
+        cascade="all, delete-orphan",
+    )
+
+    # Продукты, связанные с категорией
     products: Mapped[List["Product"]] = relationship(
         "Product",
         back_populates="category",
-        cascade="all, delete",
+        cascade="all, delete-orphan",
     )
 
     def __repr__(self):

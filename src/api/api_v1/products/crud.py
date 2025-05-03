@@ -1,5 +1,7 @@
 """  Create Read Update Delete """
 
+from typing import List
+
 from fastapi import HTTPException
 from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,7 +12,7 @@ from core.models import Product, Category
 from core.schemas.product import ProductCreate, ProductUpdate, ProductUpdatePartial
 
 
-async def get_products(session: AsyncSession) -> list[Product]:
+async def get_products(session: AsyncSession) -> List[Product]:
     stmt = select(Product).options(joinedload(Product.category)).order_by(Product.id)
     result: Result = await session.execute(stmt)
     products = result.scalars().all()
@@ -25,7 +27,7 @@ async def create_product(
     if category is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Category id: {product_in.category_id} not found.",
+            detail=f"Категория с ID: '{product_in.category_id}' не найдена.",
         )
     product_in.id = None
     product = Product(**product_in.model_dump())

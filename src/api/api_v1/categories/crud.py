@@ -26,8 +26,14 @@ async def get_category_with_subcategories(
     session: AsyncSession,
     category: Category,
 ) -> SubCategoryBase:
-    await session.refresh(category, ["subcategories"])
-    return SubCategoryBase.model_validate(category)
+    stmt = (
+        select(Category)
+        .options(selectinload(Category.subcategories))
+        .where(Category.id == category.id)
+    )
+    result = await session.execute(stmt)
+    category_with_subs = result.scalar_one()
+    return SubCategoryBase.model_validate(category_with_subs)
 
 
 async def create_category(
@@ -43,7 +49,7 @@ async def create_category(
         if not parent_category:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Parent category with id {category_in.parent_id} does not exist.",
+                detail=f"Родительская категория с ID: '{category_in.parent_id}' не существует.",
             )
 
     # Проверка, существует ли категория с таким же названием
@@ -54,7 +60,7 @@ async def create_category(
     if existing_category:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Category with name '{category_in.name}' already exists.",
+            detail=f"Категория с именем '{category_in.name}' уже существует.",
         )
 
     # Создание новой категории
@@ -68,7 +74,7 @@ async def create_category(
         await session.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Error while saving category.",
+            detail="Ошибка при создании новой категории.",
         )
 
     return category
