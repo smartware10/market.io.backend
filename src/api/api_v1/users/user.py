@@ -19,6 +19,14 @@ router = APIRouter()
     name="users:get all users",
     status_code=status.HTTP_200_OK,
     response_model=List[UserRead],
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Unauthorized: Missing or invalid token.",
+        },
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Forbidden: User is not a superuser.",
+        },
+    },
 )
 async def get_all_users(
     current_user: Annotated[
