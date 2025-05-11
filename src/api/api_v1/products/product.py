@@ -58,6 +58,7 @@ async def get_product_by_id(
     "/",
     response_model=ProductRead,
     status_code=status.HTTP_201_CREATED,
+    name="products:create a new product",
 )
 async def create_product(
     current_user: Annotated[
@@ -68,11 +69,11 @@ async def create_product(
         "AsyncSession",
         Depends(db_helper.session_getter),
     ],
-    product_in: ProductCreate,
+    schema: ProductCreate,
 ):
     return await crud.create_product(
         session=session,
-        product_in=product_in,
+        product_in=schema,
     )
 
 

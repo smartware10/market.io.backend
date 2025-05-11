@@ -4,6 +4,7 @@ from typing import List
 
 from fastapi import HTTPException
 from sqlalchemy import select, Result
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from starlette import status
@@ -23,17 +24,28 @@ async def create_product(
     session: AsyncSession,
     product_in: ProductCreate,
 ) -> Product:
+    # Если category_id передан, проверяем существование категории
     category = await session.get(Category, product_in.category_id)
     if category is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Категория с ID: '{product_in.category_id}' не найдена.",
         )
-    product_in.id = None
+
+    # Создание нового продукта
     product = Product(**product_in.model_dump())
     session.add(product)
-    await session.commit()
-    await session.refresh(product)
+    try:
+        await session.commit()
+        await session.refresh(product)
+    except IntegrityError:
+        # Ловим ошибку, если уникальные ограничения не выполнены
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Ошибка при создании нового продукта.",
+        )
+
     return product
 
 

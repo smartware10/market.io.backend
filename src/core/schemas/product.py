@@ -99,5 +99,4 @@ class ProductRead(ProductBase):
 
 
 from .category import CategoryReadWithProduct
-
 ProductRead.model_rebuild()

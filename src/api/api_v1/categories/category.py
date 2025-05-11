@@ -81,11 +81,11 @@ async def add_category(
         "UserModel",
         get_current_user("v1", superuser=True),
     ],
-    schema: CategoryCreate,
     session: Annotated[
         "AsyncSession",
         Depends(db_helper.session_getter),
     ],
+    schema: CategoryCreate,
 ):
     return await crud.create_category(
         session=session,
