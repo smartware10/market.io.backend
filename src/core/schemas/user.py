@@ -2,35 +2,105 @@ from datetime import date, datetime
 from typing import Optional
 
 from fastapi_users import schemas
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from core.types.user_id import UserIdType
 
 
 class UserProfile(BaseModel):
+    """
+    Базовая схема пользователя с основной информацией.
+    """
+
     model_config = ConfigDict(
+        title="Профиль пользователя",
         from_attributes=True,
-        json_encoders={datetime: lambda v: v.strftime("%d/%m/%Y, %H:%M")},
+        json_encoders={
+            datetime: lambda v: v.strftime("%d/%m/%Y, %H:%M:%S"),
+            date: lambda v: v.strftime("%d/%m/%Y"),
+        },
     )
 
-    username: Optional[str] = None
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    middle_name: Optional[str] = None
-    birth_date: Optional[date] = None
+    email: EmailStr = Field(
+        ..., description="Электронная почта пользователя (уникальная)"
+    )
+    is_active: Optional[bool] = Field(
+        True, description="Признак того, что пользователь активен"
+    )
+    is_superuser: Optional[bool] = Field(
+        False, description="Признак того, что пользователь является суперпользователем"
+    )
+    is_verified: Optional[bool] = Field(
+        False, description="Признак того, что электронная почта подтверждена"
+    )
+    username: Optional[str] = Field(
+        None, max_length=24, description="Имя пользователя (никнейм)"
+    )
+    first_name: Optional[str] = Field(None, max_length=24, description="Имя")
+    last_name: Optional[str] = Field(None, max_length=24, description="Фамилия")
+    middle_name: Optional[str] = Field(None, max_length=24, description="Отчество")
+    birth_date: Optional[date] = Field(None, description="Дата рождения")
 
 
 class UserProfileRead(UserProfile):
-    registered_on: datetime
+    """
+    Схема для чтения данных пользователя, включая дату регистрации.
+    """
+
+    id: int = Field(..., description="Уникальный идентификатор пользователя")
+    registered_on: datetime = Field(
+        ..., description="Дата и время регистрации пользователя"
+    )
 
 
 class UserRead(UserProfileRead, schemas.BaseUser[UserIdType]):
+    """
+    Расширенная схема чтения пользователя, включая базовые поля из FastAPI Users.
+    """
+
     pass
 
 
 class UserCreate(UserProfile, schemas.BaseUserCreate):
-    pass
+    """
+    Схема для создания нового пользователя.
+    """
+
+    password: str = Field(
+        ..., min_length=8, description="Пароль пользователя (не менее 8 символов)"
+    )
 
 
 class UserUpdate(UserProfile, schemas.BaseUserUpdate):
-    pass
+    """
+    Схема для обновления данных пользователя.
+    """
+
+    email: Optional[EmailStr] = Field(
+        None, description="Обновлённая электронная почта пользователя"
+    )
+    password: Optional[str] = Field(
+        None, min_length=8, description="Новый пароль пользователя"
+    )
+    is_active: Optional[bool] = Field(
+        None, description="Изменить статус активности пользователя"
+    )
+    is_superuser: Optional[bool] = Field(
+        None, description="Изменить статус суперпользователя"
+    )
+    is_verified: Optional[bool] = Field(
+        None, description="Подтверждена ли почта пользователя"
+    )
+    username: Optional[str] = Field(
+        None, max_length=24, description="Обновлённое имя пользователя"
+    )
+    first_name: Optional[str] = Field(
+        None, max_length=24, description="Обновлённое имя"
+    )
+    last_name: Optional[str] = Field(
+        None, max_length=24, description="Обновлённая фамилия"
+    )
+    middle_name: Optional[str] = Field(
+        None, max_length=24, description="Обновлённое отчество"
+    )
+    birth_date: Optional[date] = Field(None, description="Обновлённая дата рождения")

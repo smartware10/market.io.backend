@@ -5,6 +5,7 @@ from core.models import User
 from core.types.user_id import UserIdType
 from api.dependencies.authentication import get_authentication_backend, get_user_manager
 
+
 _fastapi_users_cache = {}
 
 
