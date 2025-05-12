@@ -3,8 +3,10 @@ from typing import AsyncGenerator
 
 import uvicorn
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from core.config import settings
 from api import router as api_router
@@ -19,7 +21,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await db_helper.dispose()
 
 
-main_app = FastAPI(title="Market.io", lifespan=lifespan)
+main_app = FastAPI(
+    title="Market.io",
+    description="Market.io API документация",
+    version="1.0.0",
+    lifespan=lifespan,
+)
 main_app.include_router(router=api_router)
 
 # Добавление CORS middleware
@@ -30,6 +37,18 @@ main_app.add_middleware(
     allow_methods=settings.middleware.allow_methods,
     allow_headers=settings.middleware.allow_headers,
 )
+
+
+@main_app.exception_handler(404)
+async def not_found_handler(request: Request, exc: StarletteHTTPException):
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={
+            "message": "Ресурс не найден",
+            "url": str(request.url),
+            "path": request.url.path,
+        },
+    )
 
 
 if __name__ == "__main__":

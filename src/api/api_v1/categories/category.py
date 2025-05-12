@@ -1,6 +1,11 @@
-from typing import Annotated, TYPE_CHECKING, List
+from typing import Annotated, TYPE_CHECKING
 
-from fastapi import APIRouter, Depends
+from fastapi import (
+    APIRouter,
+    Depends,
+    Response,
+    HTTPException,
+)
 from starlette import status
 
 from api.common import get_current_user
@@ -30,14 +35,39 @@ router = APIRouter()
     response_model=CategoryReadList,
     status_code=status.HTTP_200_OK,
     name="categories:get all categories",
+    responses={
+        status.HTTP_200_OK: {
+            "description": "Список всех категорий успешно получен.",
+        },
+        status.HTTP_204_NO_CONTENT: {
+            "description": "Категории отсутствуют.",
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Ошибка сервера при получении категорий.",
+        },
+    },
 )
 async def get_all_categories(
     session: Annotated[
         "AsyncSession",
         Depends(db_helper.session_getter),
-    ]
+    ],
 ):
-    return await common_crud.get_all_object(session=session, model=CategoryModel)
+    try:
+        categories = await common_crud.get_all_object(
+            session=session,
+            model=CategoryModel,
+        )
+    except Exception as ex:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Ошибка сервера при получении категорий.",
+        )
+
+    if not categories:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+    return categories
 
 
 @router.get(
@@ -50,7 +80,7 @@ async def get_all_categories_with_products(
     session: Annotated[
         "AsyncSession",
         Depends(db_helper.session_getter),
-    ]
+    ],
 ):
     return await crud.get_all_categories_with_products(session=session)
 
@@ -65,7 +95,7 @@ async def get_category_by_id(
     category: Annotated[
         "CategoryModel",
         Depends(category_by_id),
-    ]
+    ],
 ):
     return category
 
