@@ -1,23 +1,35 @@
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, Union
 
-from fastapi_users import BaseUserManager, IntegerIDMixin
+from fastapi_users import BaseUserManager, IntegerIDMixin, InvalidPasswordException
 
 from core.config import settings
+from core.schemas.user import UserCreate as UserCreateSchema
 from core.types.user_id import UserIdType
-from core.models import User
+from core.models import User as UserModel
 from core.logger import logger as log
 
 if TYPE_CHECKING:
     from fastapi import Request
 
 
-class UserManager(IntegerIDMixin, BaseUserManager[User, UserIdType]):
+class UserManager(IntegerIDMixin, BaseUserManager[UserModel, UserIdType]):
     reset_password_token_secret = settings.access_token.reset_password_token_secret
     verification_token_secret = settings.access_token.verification_token_secret
 
+    async def validate_password(
+        self, password: str, user: Union[UserCreateSchema, UserModel]
+    ) -> None:
+        if len(password) < 8:
+            raise InvalidPasswordException(
+                "Пароль должен содержать не менее 8 символов"
+            )
+
+        if password.isnumeric():
+            raise InvalidPasswordException("Пароль не может состоять только из цифр")
+
     async def on_after_register(
         self,
-        user: User,
+        user: UserModel,
         request: Optional["Request"] = None,
     ):
         log.info(
@@ -27,7 +39,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, UserIdType]):
 
     async def on_after_forgot_password(
         self,
-        user: User,
+        user: UserModel,
         token: str,
         request: Optional["Request"] = None,
     ):
@@ -39,7 +51,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, UserIdType]):
 
     async def on_after_request_verify(
         self,
-        user: User,
+        user: UserModel,
         token: str,
         request: Optional["Request"] = None,
     ):
