@@ -1,8 +1,9 @@
+import re
 from datetime import date, datetime
 from typing import Optional
 
 from fastapi_users import schemas
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from core.types.user_id import UserIdType
 
@@ -13,7 +14,6 @@ class UserProfile(BaseModel):
     """
 
     model_config = ConfigDict(
-        title="Профиль пользователя",
         from_attributes=True,
         json_encoders={
             datetime: lambda v: v.strftime("%d/%m/%Y, %H:%M:%S"),
@@ -23,6 +23,12 @@ class UserProfile(BaseModel):
 
     email: EmailStr = Field(
         ..., description="Электронная почта пользователя (уникальная)"
+    )
+    password: str = Field(
+        ...,
+        min_length=8,
+        exclude=True,
+        description="Пароль пользователя (не менее 8 символов)",
     )
     is_active: Optional[bool] = Field(
         True, description="Признак того, что пользователь активен"
@@ -69,6 +75,15 @@ class UserCreate(UserProfile, schemas.BaseUserCreate):
     password: str = Field(
         ..., min_length=8, description="Пароль пользователя (не менее 8 символов)"
     )
+
+    @field_validator("password")  # noqa
+    @classmethod
+    def validate_password(cls, v: str) -> str:
+        if v.isnumeric():
+            raise ValueError("Пароль не может состоять только из цифр")
+        if not re.search(r"[A-Za-z]", v):
+            raise ValueError("Пароль должен содержать хотя бы одну букву")
+        return v
 
 
 class UserUpdate(UserProfile, schemas.BaseUserUpdate):

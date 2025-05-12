@@ -14,7 +14,7 @@ async def reset_database_helper() -> None:
 
             for table in Base.metadata.tables.keys():
                 sequence_name = f"{table}_id_seq"
-                # Перевіримо чи існує sequence перед ALTER
+
                 result = await session.execute(
                     text(
                         """
