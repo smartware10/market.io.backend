@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, PostgresDsn
+from pydantic import BaseModel, PostgresDsn, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).parent.parent
@@ -42,7 +42,7 @@ class AuthJWT(BaseModel):
     private_key_path: Path = BASE_DIR / "certs" / "jwt-private.pem"
     public_key_path: Path = BASE_DIR / "certs" / "jwt-public.pem"
     algorithm: str = "RS256"
-    access_token_expire_minutes: int = 60 * 60
+    access_token_expire_minutes: int = 3600
 
 
 class ApiV1Prefix(BaseModel):
@@ -72,8 +72,10 @@ class ApiPrefix(BaseModel):
 
 class AccessToken(BaseModel):
     lifetime_seconds: int = 3600
-    reset_password_token_secret: str
-    verification_token_secret: str
+    reset_password_token_secret: SecretStr
+    verification_token_secret: SecretStr
+    reset_password_token_audience: str = "Market.io: ResetPasswordToken"
+    verification_token_audience: str = "Market.io: VerificationToken"
 
 
 class Settings(BaseSettings):

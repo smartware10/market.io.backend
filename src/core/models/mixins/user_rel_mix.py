@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, Integer
 from sqlalchemy.orm import declared_attr, Mapped, mapped_column, relationship
 
 from core.types.user_id import UserIdType
@@ -17,7 +17,7 @@ class UserRelationMixin:
 
     @declared_attr
     def user_id(cls) -> Mapped[UserIdType]:
-        return mapped_column(
+        return mapped_column(Integer,
             ForeignKey(
                 "users.id",
                 ondelete=cls._user_id_ondelete,
