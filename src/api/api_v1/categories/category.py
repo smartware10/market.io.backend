@@ -37,7 +37,7 @@ router = APIRouter()
     name="categories:get all categories",
     responses={
         status.HTTP_200_OK: {
-            "description": "Список всех категорий успешно получен.",
+            "description": "Успешный ответ",
         },
         status.HTTP_204_NO_CONTENT: {
             "description": "Категории отсутствуют.",

@@ -1,17 +1,15 @@
 import re
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, List
 
 from fastapi_users import schemas
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, RootModel
 
 from core.types.user_id import UserIdType
 
 
 class UserProfile(BaseModel):
-    """
-    Базовая схема пользователя с основной информацией.
-    """
+    """Базовая схема пользователя с основной информацией."""
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -49,9 +47,7 @@ class UserProfile(BaseModel):
 
 
 class UserProfileRead(UserProfile):
-    """
-    Схема для чтения данных пользователя, включая дату регистрации.
-    """
+    """Схема для чтения данных пользователя."""
 
     id: int = Field(..., description="Уникальный идентификатор пользователя")
     registered_on: datetime = Field(
@@ -59,18 +55,20 @@ class UserProfileRead(UserProfile):
     )
 
 
+class UserReadList(RootModel[List["UserRead"]]):
+    """Схема для чтения списка пользователей."""
+
+    pass
+
+
 class UserRead(UserProfileRead, schemas.BaseUser[UserIdType]):
-    """
-    Расширенная схема чтения пользователя, включая базовые поля из FastAPI Users.
-    """
+    """Схема для чтения пользователя, включая базовые поля из FastAPI Users."""
 
     pass
 
 
 class UserCreate(UserProfile, schemas.BaseUserCreate):
-    """
-    Схема для создания нового пользователя.
-    """
+    """Схема для создания нового пользователя."""
 
     password: str = Field(
         ..., min_length=8, description="Пароль пользователя (не менее 8 символов)"
@@ -87,9 +85,7 @@ class UserCreate(UserProfile, schemas.BaseUserCreate):
 
 
 class UserUpdate(UserProfile, schemas.BaseUserUpdate):
-    """
-    Схема для обновления данных пользователя.
-    """
+    """Схема для обновления данных пользователя."""
 
     email: Optional[EmailStr] = Field(
         None, description="Обновлённая электронная почта пользователя"
