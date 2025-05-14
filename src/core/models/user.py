@@ -18,10 +18,10 @@ if TYPE_CHECKING:
 
 class User(Base, IdIntPkMixin, SQLAlchemyBaseUserTable[UserIdType]):
 
-    username: Mapped[str] = mapped_column(String(24), nullable=True)
-    first_name: Mapped[str] = mapped_column(String(24), nullable=True)
-    last_name: Mapped[str] = mapped_column(String(24), nullable=True)
-    middle_name: Mapped[str] = mapped_column(String(24), nullable=True)
+    username: Mapped[str] = mapped_column(String(32), nullable=True)
+    first_name: Mapped[str] = mapped_column(String(32), nullable=True)
+    last_name: Mapped[str] = mapped_column(String(32), nullable=True)
+    middle_name: Mapped[str] = mapped_column(String(32), nullable=True)
     birth_date: Mapped[date] = mapped_column(TIMESTAMP, nullable=True, default=None)
     registered_on: Mapped[datetime] = mapped_column(
         TIMESTAMP, nullable=False, server_default=func.now()

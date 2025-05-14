@@ -36,6 +36,9 @@ class UserManager(IntegerIDMixin, BaseUserManager[UserModel, UserIdType]):
                 "Пароль должен содержать не менее 8 символов"
             )
 
+        if len(password) > 128:
+            raise InvalidPasswordException("Пароль не должен превышать 128 символов")
+
         if password.isnumeric():
             raise InvalidPasswordException("Пароль не может состоять только из цифр")
 
