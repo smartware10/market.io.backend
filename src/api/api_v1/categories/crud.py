@@ -1,4 +1,4 @@
-"""  Create Read Update Delete """
+"""Create Read Update Delete"""
 
 from typing import List
 
@@ -49,7 +49,10 @@ async def create_category(
         if not parent_category:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Родительская категория с ID: '{category_in.parent_id}' не существует.",
+                detail={
+                    "code": "PARENT_ID_DOES_NOT_EXIST",
+                    "reason": f"Parent category with ID: '{category_in.parent_id}' does not exist.",
+                },
             )
 
     # Проверка, существует ли категория с таким же названием
@@ -59,8 +62,11 @@ async def create_category(
     existing_category = existing_category.scalar_one_or_none()
     if existing_category:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Категория с именем '{category_in.name}' уже существует.",
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "code": "NAME_ALREADY_EXISTS",
+                "reason": f"A category with the name '{category_in.name}' already exists.",
+            },
         )
 
     # Создание новой категории
@@ -74,7 +80,10 @@ async def create_category(
         await session.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Ошибка при создании новой категории.",
+            detail={
+                "code": "INTEGRITY_ERROR",
+                "reason": "Error creating new category.",
+            },
         )
 
     return category

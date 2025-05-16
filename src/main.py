@@ -23,7 +23,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 main_app = FastAPI(
     title="Market.io",
-    description="Market.io API документация",
+    description="Market.io API documentation",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -44,9 +44,13 @@ async def not_found_handler(request: Request, exc: StarletteHTTPException):
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
         content={
-            "message": "Ресурс не найден",
-            "url": str(request.url),
-            "path": request.url.path,
+            "detail": {
+                "code": exc.status_code,
+                "reason": {
+                    "detail": exc.detail,
+                    "url": str(request.url),
+                },
+            },
         },
     )
 

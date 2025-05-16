@@ -19,15 +19,16 @@ router = APIRouter()
     name="users:get all users",
     status_code=status.HTTP_200_OK,
     response_model=UserReadList,
+    description="<h1>Get a list of all users</h1>",
     responses={
-        status.HTTP_200_OK: {
-            "description": "Успешный ответ",
-        },
         status.HTTP_401_UNAUTHORIZED: {
-            "description": "Неавторизован: отсутствует или недействительный токен.",
+            "description": "Missing token or inactive user",
         },
         status.HTTP_403_FORBIDDEN: {
-            "description": "Доступ запрещён: пользователь не является суперпользователем.",
+            "description": "Not a superuser",
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error",
         },
     },
 )

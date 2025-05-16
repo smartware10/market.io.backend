@@ -19,5 +19,5 @@ async def category_by_id(
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Категория с ID: '{category_id}' не найдена.",
+        detail=f"Category with ID: '{category_id}' not found.",
     )

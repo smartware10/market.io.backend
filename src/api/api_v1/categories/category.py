@@ -36,14 +36,11 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
     name="categories:get all categories",
     responses={
-        status.HTTP_200_OK: {
-            "description": "Успешный ответ",
-        },
         status.HTTP_204_NO_CONTENT: {
-            "description": "Категории отсутствуют.",
+            "description": "There are no categories",
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "description": "Ошибка сервера при получении категорий.",
+            "description": "Internal Server Error",
         },
     },
 )
@@ -61,7 +58,7 @@ async def get_all_categories(
     except Exception as ex:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Ошибка сервера при получении категорий.",
+            detail="Internal Server Error",
         )
 
     if not categories:
@@ -75,6 +72,14 @@ async def get_all_categories(
     response_model=CategoryReadListWithProducts,
     status_code=status.HTTP_200_OK,
     name="categories:get all categories with products",
+    responses={
+        status.HTTP_204_NO_CONTENT: {
+            "description": "There are no categories",
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error",
+        },
+    },
 )
 async def get_all_categories_with_products(
     session: Annotated[
@@ -90,6 +95,14 @@ async def get_all_categories_with_products(
     response_model=CategoryRead,
     status_code=status.HTTP_200_OK,
     name="categories:get category by id",
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "description": "The category does not exist",
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error",
+        },
+    },
 )
 async def get_category_by_id(
     category: Annotated[
@@ -105,8 +118,63 @@ async def get_category_by_id(
     response_model=CategoryRead,
     status_code=status.HTTP_201_CREATED,
     name="categories:create a new category",
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "Error creating new category.": {
+                            "summary": "Error creating new category.",
+                            "value": {
+                                "detail": {
+                                    "code": "INTEGRITY_ERROR",
+                                    "reason": "Error creating new category.",
+                                },
+                            },
+                        },
+                        "Parent category with ID does not exist.": {
+                            "summary": "ID does not exist.",
+                            "value": {
+                                "detail": {
+                                    "code": "PARENT_ID_DOES_NOT_EXIST",
+                                    "reason": "Parent category with ID does not exist.",
+                                }
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Missing token or inactive user",
+        },
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Not a superuser",
+        },
+        status.HTTP_409_CONFLICT: {
+            "description": "Category already exists",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "A category with the name already exists.": {
+                            "summary": "Name already exists.",
+                            "value": {
+                                "detail": {
+                                    "code": "NAME_ALREADY_EXISTS",
+                                    "reason": "A category with the name already exists.",
+                                }
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error",
+        },
+    },
 )
-async def add_category(
+async def create_category(
     current_user: Annotated[
         "UserModel",
         get_current_user("v1", superuser=True),
@@ -128,6 +196,14 @@ async def add_category(
     response_model=SubCategoryBase,
     status_code=status.HTTP_200_OK,
     name="categories:get category with subcategories",
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "description": "The category does not exist",
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error",
+        },
+    },
 )
 async def get_category_with_subcategories(
     session: Annotated[
