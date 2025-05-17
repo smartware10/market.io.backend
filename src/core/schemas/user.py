@@ -205,7 +205,7 @@ class UserUpdate(UserProfile, schemas.BaseUserUpdate):
             "writeOnly": True,
         },
     )
-    password_repeat: str = Field(
+    password_repeat: Optional[str] = Field(
         None,
         exclude=True,
         description="Повтор пароля",
@@ -291,14 +291,14 @@ class UserUpdate(UserProfile, schemas.BaseUserUpdate):
         if self.password is None:
             return self
 
-        # if not self.password_repeat:
-        #     raise HTTPException(
-        #         status_code=status.HTTP_400_BAD_REQUEST,
-        #         detail={
-        #             "code": ErrorCode.UPDATE_USER_INVALID_PASSWORD,
-        #             "reason": "Повтор пароля обязателен при смене пароля",
-        #         },
-        #     )
+        if not self.password_repeat:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "code": ErrorCode.UPDATE_USER_INVALID_PASSWORD,
+                    "reason": "Повтор пароля обязателен при смене пароля",
+                },
+            )
 
         if self.password != self.password_repeat:
             raise HTTPException(
