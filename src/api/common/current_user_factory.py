@@ -11,7 +11,7 @@ _fastapi_users_cache = {}
 
 def get_current_user(
     version_api: str, active_user: bool = True, superuser: bool = False
-):
+) -> Depends:
     if version_api not in _fastapi_users_cache:
         from core.config import settings, get_token_url
 

@@ -3,10 +3,9 @@ from typing import AsyncGenerator
 
 import uvicorn
 
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request, status, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from core.config import settings
 from api import router as api_router
@@ -40,14 +39,14 @@ main_app.add_middleware(
 
 
 @main_app.exception_handler(404)
-async def not_found_handler(request: Request, exc: StarletteHTTPException):
+async def not_found_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
         content={
             "detail": {
                 "code": exc.status_code,
                 "reason": {
-                    "detail": exc.detail,
+                    "error": exc.detail,
                     "url": str(request.url),
                 },
             },

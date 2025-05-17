@@ -25,7 +25,6 @@ from . import crud
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
-    from core.models import User as UserModel
 
 router = APIRouter()
 
@@ -35,6 +34,7 @@ router = APIRouter()
     response_model=CategoryReadList,
     status_code=status.HTTP_200_OK,
     name="categories:get all categories",
+    description="<h1>Get all categories</h1>",
     responses={
         status.HTTP_204_NO_CONTENT: {
             "description": "There are no categories",
@@ -95,6 +95,7 @@ async def get_all_categories_with_products(
     response_model=CategoryRead,
     status_code=status.HTTP_200_OK,
     name="categories:get category by id",
+    description="<h1>Get category by ID</h1>",
     responses={
         status.HTTP_404_NOT_FOUND: {
             "description": "The category does not exist",
@@ -117,6 +118,13 @@ async def get_category_by_id(
     "/",
     response_model=CategoryRead,
     status_code=status.HTTP_201_CREATED,
+    description="<h1>Create a new category</h1>",
+    dependencies=[
+        get_current_user(
+            "v1",
+            superuser=True,
+        )
+    ],
     name="categories:create a new category",
     responses={
         status.HTTP_400_BAD_REQUEST: {
@@ -127,7 +135,7 @@ async def get_category_by_id(
                             "summary": "Error creating new category.",
                             "value": {
                                 "detail": {
-                                    "code": "INTEGRITY_ERROR",
+                                    "code": "CATEGORY_INTEGRITY_ERROR",
                                     "reason": "Error creating new category.",
                                 },
                             },
@@ -160,7 +168,7 @@ async def get_category_by_id(
                             "summary": "Name already exists.",
                             "value": {
                                 "detail": {
-                                    "code": "NAME_ALREADY_EXISTS",
+                                    "code": "CATEGORY_NAME_ALREADY_EXISTS",
                                     "reason": "A category with the name already exists.",
                                 }
                             },
@@ -175,10 +183,6 @@ async def get_category_by_id(
     },
 )
 async def create_category(
-    current_user: Annotated[
-        "UserModel",
-        get_current_user("v1", superuser=True),
-    ],
     session: Annotated[
         "AsyncSession",
         Depends(db_helper.session_getter),
