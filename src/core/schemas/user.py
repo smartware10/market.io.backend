@@ -17,7 +17,7 @@ from pydantic_core.core_schema import ValidationInfo
 
 
 class UserProfile(BaseModel):
-    """Базовая схема пользователя с основной информацией."""
+    """Base user schema with main profile information."""
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -29,7 +29,7 @@ class UserProfile(BaseModel):
 
     email: EmailStr = Field(
         ...,
-        description="Электронная почта пользователя (уникальная)",
+        description="User's email (must be unique)",
         json_schema_extra={
             "format": "email, unique",
             "example": "example@market.io",
@@ -37,7 +37,7 @@ class UserProfile(BaseModel):
     )
     is_active: Optional[bool] = Field(
         True,
-        description="Признак того, что пользователь активен",
+        description="Indicates whether the user is active",
         json_schema_extra={
             "format": "boolean",
             "readOnly": True,
@@ -46,7 +46,7 @@ class UserProfile(BaseModel):
     )
     is_superuser: Optional[bool] = Field(
         False,
-        description="Признак того, что пользователь является суперпользователем",
+        description="Indicates whether the user is a superuser",
         json_schema_extra={
             "format": "boolean",
             "readOnly": True,
@@ -55,7 +55,7 @@ class UserProfile(BaseModel):
     )
     is_verified: Optional[bool] = Field(
         False,
-        description="Признак того, что электронная почта подтверждена",
+        description="Indicates whether the email is verified",
         json_schema_extra={
             "format": "boolean",
             "readOnly": True,
@@ -65,7 +65,7 @@ class UserProfile(BaseModel):
     username: Optional[str] = Field(
         None,
         max_length=32,
-        description="Имя пользователя (никнейм), (до 32 символов)",
+        description="Username (up to 32 characters)",
         json_schema_extra={
             "format": "string",
             "maxLength": 32,
@@ -74,7 +74,7 @@ class UserProfile(BaseModel):
     first_name: Optional[str] = Field(
         None,
         max_length=32,
-        description="Имя (до 32 символов)",
+        description="First name (up to 32 characters)",
         json_schema_extra={
             "format": "string",
             "maxLength": 32,
@@ -83,7 +83,7 @@ class UserProfile(BaseModel):
     last_name: Optional[str] = Field(
         None,
         max_length=32,
-        description="Фамилия (до 32 символов)",
+        description="Last name (up to 32 characters)",
         json_schema_extra={
             "format": "string",
             "maxLength": 32,
@@ -92,7 +92,7 @@ class UserProfile(BaseModel):
     middle_name: Optional[str] = Field(
         None,
         max_length=32,
-        description="Отчество (до 32 символов)",
+        description="Middle name (up to 32 characters)",
         json_schema_extra={
             "format": "string",
             "maxLength": 32,
@@ -100,7 +100,7 @@ class UserProfile(BaseModel):
     )
     birth_date: Optional[date] = Field(
         None,
-        description="Дата рождения (в формате 'ГГГГ-ММ-ДД')",
+        description="Birth date (in format 'YYYY-MM-DD')",
         json_schema_extra={
             "format": "date, YYYY-MM-DD",
             "example": "2020-01-20",
@@ -109,11 +109,11 @@ class UserProfile(BaseModel):
 
 
 class UserProfileRead(UserProfile):
-    """Схема для чтения данных пользователя."""
+    """Schema for reading user data."""
 
     id: int = Field(
         ...,
-        description="Уникальный идентификатор пользователя",
+        description="Unique user identifier",
         json_schema_extra={
             "format": "integer, unique",
             "readOnly": True,
@@ -121,7 +121,7 @@ class UserProfileRead(UserProfile):
     )
     registered_on: datetime = Field(
         ...,
-        description="Дата и время регистрации пользователя",
+        description="User registration date and time",
         json_schema_extra={
             "format": "datetime",
             "readOnly": True,
@@ -131,23 +131,23 @@ class UserProfileRead(UserProfile):
 
 
 class UserReadList(RootModel[List["UserRead"]]):
-    """Схема для чтения списка пользователей."""
+    """Schema for reading a list of users."""
 
     pass
 
 
 class UserRead(UserProfileRead, schemas.BaseUser):
-    """Схема для чтения пользователя, включая базовые поля из FastAPI Users."""
+    """Schema for reading a user, including base fields from FastAPI Users."""
 
     pass
 
 
 class UserCreate(UserProfile, schemas.BaseUserCreate):
-    """Схема для создания нового пользователя."""
+    """Schema for creating a new user."""
 
     password: str = Field(
         ...,
-        description="Пароль пользователя (не менее 8 символов)",
+        description="User password (minimum 8 characters)",
         json_schema_extra={
             "minLength": 8,
             "maxLength": 128,
@@ -159,7 +159,7 @@ class UserCreate(UserProfile, schemas.BaseUserCreate):
     password_repeat: str = Field(
         ...,
         exclude=True,
-        description="Повтор пароля",
+        description="Password confirmation",
         json_schema_extra={
             "minLength": 8,
             "maxLength": 128,
@@ -177,18 +177,18 @@ class UserCreate(UserProfile, schemas.BaseUserCreate):
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail={
                     "code": ErrorCode.REGISTER_INVALID_PASSWORD,
-                    "reason": "Пароли не совпадают",
+                    "reason": "Passwords do not match",
                 },
             )
         return value
 
 
 class UserUpdate(UserProfile, schemas.BaseUserUpdate):
-    """Схема для обновления данных пользователя."""
+    """Schema for updating user data."""
 
     email: Optional[EmailStr] = Field(
         None,
-        description="Обновлённая электронная почта пользователя",
+        description="Updated user email",
         json_schema_extra={
             "format": "email, unique",
             "example": "example@market.io",
@@ -196,7 +196,7 @@ class UserUpdate(UserProfile, schemas.BaseUserUpdate):
     )
     password: Optional[str] = Field(
         None,
-        description="Новый пароль пользователя",
+        description="New user password",
         json_schema_extra={
             "minLength": 8,
             "maxLength": 128,
@@ -208,7 +208,7 @@ class UserUpdate(UserProfile, schemas.BaseUserUpdate):
     password_repeat: Optional[str] = Field(
         None,
         exclude=True,
-        description="Повтор пароля",
+        description="Password confirmation",
         json_schema_extra={
             "minLength": 8,
             "maxLength": 128,
@@ -219,7 +219,7 @@ class UserUpdate(UserProfile, schemas.BaseUserUpdate):
     )
     is_active: Optional[bool] = Field(
         None,
-        description="Изменить статус активности пользователя",
+        description="Change user active status",
         json_schema_extra={
             "format": "boolean",
             "example": False,
@@ -227,7 +227,7 @@ class UserUpdate(UserProfile, schemas.BaseUserUpdate):
     )
     is_superuser: Optional[bool] = Field(
         None,
-        description="Изменить статус суперпользователя",
+        description="Change user superuser status",
         json_schema_extra={
             "format": "boolean",
             "example": True,
@@ -235,7 +235,7 @@ class UserUpdate(UserProfile, schemas.BaseUserUpdate):
     )
     is_verified: Optional[bool] = Field(
         None,
-        description="Подтверждена ли почта пользователя",
+        description="Indicates if the user's email is verified",
         json_schema_extra={
             "format": "boolean",
             "example": True,
@@ -244,7 +244,7 @@ class UserUpdate(UserProfile, schemas.BaseUserUpdate):
     username: Optional[str] = Field(
         None,
         max_length=32,
-        description="Обновлённое имя пользователя",
+        description="Updated username",
         json_schema_extra={
             "format": "string",
             "maxLength": 32,
@@ -253,7 +253,7 @@ class UserUpdate(UserProfile, schemas.BaseUserUpdate):
     first_name: Optional[str] = Field(
         None,
         max_length=32,
-        description="Обновлённое имя",
+        description="Updated first name",
         json_schema_extra={
             "format": "string",
             "maxLength": 32,
@@ -262,7 +262,7 @@ class UserUpdate(UserProfile, schemas.BaseUserUpdate):
     last_name: Optional[str] = Field(
         None,
         max_length=32,
-        description="Обновлённая фамилия",
+        description="Updated last name",
         json_schema_extra={
             "format": "string",
             "maxLength": 32,
@@ -271,7 +271,7 @@ class UserUpdate(UserProfile, schemas.BaseUserUpdate):
     middle_name: Optional[str] = Field(
         None,
         max_length=32,
-        description="Обновлённое отчество",
+        description="Updated middle name",
         json_schema_extra={
             "format": "string",
             "maxLength": 32,
@@ -279,7 +279,7 @@ class UserUpdate(UserProfile, schemas.BaseUserUpdate):
     )
     birth_date: Optional[date] = Field(
         None,
-        description="Обновлённая дата рождения",
+        description="Updated birth date",
         json_schema_extra={
             "format": "date, YYYY-MM-DD",
             "example": "2020-01-20",
@@ -296,7 +296,7 @@ class UserUpdate(UserProfile, schemas.BaseUserUpdate):
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail={
                     "code": ErrorCode.UPDATE_USER_INVALID_PASSWORD,
-                    "reason": "Повтор пароля обязателен при смене пароля",
+                    "reason": "Password confirmation is required when changing the password",
                 },
             )
 
@@ -305,7 +305,7 @@ class UserUpdate(UserProfile, schemas.BaseUserUpdate):
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail={
                     "code": ErrorCode.UPDATE_USER_INVALID_PASSWORD,
-                    "reason": "Пароли не совпадают",
+                    "reason": "Passwords do not match",
                 },
             )
 

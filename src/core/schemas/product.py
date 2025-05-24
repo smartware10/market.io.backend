@@ -7,96 +7,101 @@ class ProductBase(BaseModel):
 
     name: str = Field(
         ...,
-        title="Название товара",
-        description="Полное название товара",
-        examples=["Смартфон Samsung Galaxy A52"],
+        title="Product Name",
+        description="Full name of the product",
+        examples=["Samsung Galaxy A52 Smartphone"],
         max_length=128,
         min_length=3,
     )
     description: str = Field(
         ...,
-        title="Описание",
-        description="Краткое описание товара",
-        examples=["Современный смартфон с экраном 6.5 дюйма"],
+        title="Description",
+        description="Short description of the product",
+        examples=["Modern smartphone with 6.5-inch screen"],
         max_length=512,
         min_length=3,
     )
     price: int = Field(
-        ..., title="Цена", description="Цена товара", examples=[19990], gt=0
+        ...,
+        title="Price",
+        description="Product price",
+        examples=[19990],
+        gt=0,
     )
     category_id: int = Field(
         ...,
-        title="ID категории",
-        description="Идентификатор категории, к которой относится товар",
+        title="Category ID",
+        description="ID of the category the product belongs to",
         examples=[3],
         gt=0,
     )
 
 
 class ProductReadList(RootModel[List["ProductRead"]]):
-    """Схема для чтения списка продуктов"""
+    """Schema for reading a list of products"""
 
     pass
 
 
 class ProductCreate(ProductBase):
-    """Схема для создания продукта"""
+    """Schema for creating a product"""
 
     pass
 
 
 class ProductUpdate(ProductCreate):
-    """Схема для обновления продукта"""
+    """Schema for updating a product"""
 
     pass
 
 
 class ProductUpdatePartial(ProductBase):
-    """Схема для частичного обновления продукта"""
+    """Schema for partially updating a product"""
 
     name: Optional[str] = Field(
         default=None,
-        title="Название товара",
-        description="Полное название товара (опционально)",
-        examples=["Смартфон Samsung Galaxy A52"],
+        title="Product Name",
+        description="Full product name (optional)",
+        examples=["Samsung Galaxy A52 Smartphone"],
         max_length=128,
         min_length=3,
     )
     description: Optional[str] = Field(
         default=None,
-        title="Описание",
-        description="Краткое описание товара (опционально)",
-        examples=["Современный смартфон с экраном 6.5 дюйма"],
+        title="Description",
+        description="Short product description (optional)",
+        examples=["Modern smartphone with 6.5-inch screen"],
         max_length=512,
         min_length=3,
     )
     price: Optional[int] = Field(
         default=None,
-        title="Цена",
-        description="Цена товара в рублях (опционально)",
+        title="Price",
+        description="Product price in rubles (optional)",
         examples=[19990],
         gt=0,
     )
     category_id: Optional[int] = Field(
         default=None,
-        title="ID категории",
-        description="Идентификатор категории (опционально)",
+        title="Category ID",
+        description="Category identifier (optional)",
         examples=[3],
         gt=0,
     )
 
 
 class ProductRead(ProductBase):
-    """Схема для чтения продукта"""
+    """Schema for reading a product"""
 
     id: int = Field(
         ...,
-        title="ID товара",
-        description="Уникальный идентификатор товара",
+        title="Product ID",
+        description="Unique identifier of the product",
         gt=0,
         examples=[101],
     )
 
 
 from .category import CategoryReadWithProduct
+
 ProductRead.model_rebuild()

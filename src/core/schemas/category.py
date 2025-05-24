@@ -10,81 +10,81 @@ class CategoryBase(BaseModel):
 
     name: str = Field(
         ...,
-        title="Название категории",
+        title="Category Name",
         min_length=3,
         max_length=32,
-        description="Уникальное название категории, от 3 до 32 символов.",
-        examples=["Электроника"],
+        description="Unique category name, between 3 and 32 characters.",
+        examples=["Electronics"],
     )
     description: Optional[str] = Field(
         default=None,
-        title="Описание категории",
+        title="Category Description",
         max_length=128,
-        description="Краткое описание категории (необязательно), от 3 до 128 символов.",
-        examples=["Товары из области электроники"],
+        description="A short description of the category (optional), between 3 and 128 characters.",
+        examples=["Products in the field of electronics"],
     )
     parent_id: Optional[int] = Field(
         default=None,
         gt=0,
-        title="ID родительской категории",
-        description="ID родительской категории, если эта категория является подкатегорией.",
+        title="Parent Category ID",
+        description="ID of the parent category, if this is a subcategory.",
         examples=[1],
     )
 
 
 class CategoryReadList(RootModel[List["CategoryRead"]]):
-    """Схема для чтения списка категорий"""
+    """Schema for reading a list of categories"""
 
     pass
 
 
 class CategoryReadListWithProducts(RootModel[List["CategoryReadWithProduct"]]):
-    """Схема для чтения списка категорий с продуктами"""
+    """Schema for reading a list of categories with products"""
 
     pass
 
 
 class CategoryCreate(CategoryBase):
-    """Схема для создания категории"""
+    """Schema for creating a category"""
 
     pass
 
 
 class CategoryUpdate(CategoryCreate):
-    """Схема для обновления категории"""
+    """Schema for updating a category"""
 
     pass
 
 
 class CategoryRead(CategoryBase):
-    """Схема для чтения категории"""
+    """Schema for reading a category"""
 
     id: int = Field(
         ...,
-        title="ID категории",
-        description="Уникальный идентификатор категории.",
+        title="Category ID",
+        description="Unique identifier of the category.",
         examples=[3],
         gt=0,
     )
 
 
 class SubCategoryBase(CategoryRead):
-    """Схема для чтения подкатегорий выбраной категории"""
+    """Schema for reading subcategories of a selected category"""
 
     subcategories: Optional[List["CategoryRead"]] = Field(
         default=None,
-        title="Подкатегории",
-        description="Список вложенных подкатегорий (если есть).",
+        title="Subcategories",
+        description="List of nested subcategories (if any).",
     )
 
 
 class CategoryReadWithProduct(CategoryRead):
-    """Схема для чтения категории со списком продуктов"""
+    """Schema for reading a category with a list of products"""
 
     products: Optional[List["ProductRead"]] = Field(
         default=None,
-        title="Продукты категории",
-        description="Список продуктов, связанных с этой категорией.",
+        title="Category Products",
+        description="List of products associated with this category.",
     )
 
 

@@ -33,14 +33,14 @@ class UserManager(IntegerIDMixin, BaseUserManager[UserModel, UserIdType]):
     ) -> None:
         if len(password) < 8:
             raise InvalidPasswordException(
-                "Пароль должен содержать не менее 8 символов"
+                "Password must be at least 8 characters long"
             )
 
         if len(password) > 128:
-            raise InvalidPasswordException("Пароль не должен превышать 128 символов")
+            raise InvalidPasswordException("Password must not exceed 128 characters")
 
         if password.isnumeric():
-            raise InvalidPasswordException("Пароль не может состоять только из цифр")
+            raise InvalidPasswordException("Password cannot consist of digits only")
 
     async def on_after_register(
         self,

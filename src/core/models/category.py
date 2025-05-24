@@ -21,21 +21,21 @@ class Category(Base, IdIntPkMixin):
         nullable=True,
     )
 
-    # Отношение к родительской категории
+    # Attitude to parent category
     parent: Mapped[Optional["Category"]] = relationship(
         "Category",
         remote_side="Category.id",
         back_populates="subcategories",
     )
 
-    # Список подкатегорий
+    # List of subcategories
     subcategories: Mapped[List["Category"]] = relationship(
         "Category",
         back_populates="parent",
         cascade="all, delete-orphan",
     )
 
-    # Продукты, связанные с категорией
+    # Products related to category
     products: Mapped[List["Product"]] = relationship(
         "Product",
         back_populates="category",

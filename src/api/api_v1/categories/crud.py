@@ -40,7 +40,7 @@ async def create_category(
     session: AsyncSession,
     category_in: CategoryCreate,
 ) -> Category:
-    # Если parent_id передан, проверяем существование родительской категории
+    # If 'parent_id' is passed, check for the existence of the parent category
     if category_in.parent_id:
         parent_category = await session.execute(
             select(Category).filter(Category.id == category_in.parent_id)
@@ -55,7 +55,7 @@ async def create_category(
                 },
             )
 
-    # Проверка, существует ли категория с таким же названием
+    # Check if a category with the same name exists
     existing_category = await session.execute(
         select(Category).filter(Category.name == category_in.name)
     )
@@ -69,14 +69,14 @@ async def create_category(
             },
         )
 
-    # Создание новой категории
+    # Create a new category
     category = Category(**category_in.model_dump())
     session.add(category)
     try:
         await session.commit()
         await session.refresh(category)
     except IntegrityError:
-        # Ловим ошибку, если уникальные ограничения не выполнены
+        # Catch an error if unique constraints are not met
         await session.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
