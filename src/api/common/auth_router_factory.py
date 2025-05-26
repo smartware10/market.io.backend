@@ -13,17 +13,17 @@ def get_auth_router(version_api: str) -> APIRouter:
 
     router = APIRouter()
 
-    # Выбираем стратегию для версии и URL
+    # Choosing a strategy for version and URL
     try:
         strategy = getattr(settings.api, version_api).authentication_backend_strategy
         token_url = get_token_url(version_api)
     except AttributeError:
         raise AttributeError(f"Invalid version API selected!. Got: {version_api}")
 
-    # Создаем authentication_backend
+    # Create authentication_backend
     authentication_backend = get_authentication_backend(strategy, token_url)
 
-    # Создаем FastAPIUsers
+    # Create FastAPIUsers
     fastapi_users = FastAPIUsers[User, UserIdType](
         get_user_manager,
         auth_backends=[authentication_backend],

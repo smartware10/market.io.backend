@@ -1,4 +1,4 @@
-"""  Create Read Update Delete """
+"""Create Read Update Delete"""
 
 from typing import List
 
@@ -24,26 +24,26 @@ async def create_product(
     session: AsyncSession,
     product_in: ProductCreate,
 ) -> Product:
-    # Если category_id передан, проверяем существование категории
+    # If 'category_id' is passed, check for the existence of the category
     category = await session.get(Category, product_in.category_id)
     if category is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Категория с ID: '{product_in.category_id}' не найдена.",
+            detail=f"Category with ID: '{product_in.category_id}' not found.",
         )
 
-    # Создание нового продукта
+    # Creation of a new product
     product = Product(**product_in.model_dump())
     session.add(product)
     try:
         await session.commit()
         await session.refresh(product)
     except IntegrityError:
-        # Ловим ошибку, если уникальные ограничения не выполнены
+        # Catch an error if unique constraints are not met
         await session.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Ошибка при создании нового продукта.",
+            detail="Error creating new product.",
         )
 
     return product

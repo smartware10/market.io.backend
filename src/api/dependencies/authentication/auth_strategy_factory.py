@@ -25,7 +25,7 @@ def get_authentication_backend(
             f"Invalid strategy selected! Choose either 'db' or 'jwt'. Got: {strategy_type}"
         )
 
-    # Создаем BearerTransport с нужным URL
+    # Create a BearerTransport with the desired URL
     transport = BearerTransport(tokenUrl=token_url)
 
     return AuthenticationBackend(

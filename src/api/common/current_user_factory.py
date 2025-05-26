@@ -15,7 +15,7 @@ def get_current_user(
     if version_api not in _fastapi_users_cache:
         from core.config import settings, get_token_url
 
-        # Выбираем стратегию для версии и URL
+        # Choosing a strategy for version and URL
         try:
             strategy = getattr(
                 settings.api, version_api
@@ -24,10 +24,10 @@ def get_current_user(
         except AttributeError:
             raise ValueError(f"Invalid version API selected!. Got: {version_api}")
 
-        # Создаем authentication_backend
+        # Create authentication_backend
         authentication_backend = get_authentication_backend(strategy, token_url)
 
-        # Создаем FastAPIUsers
+        # Create FastAPIUsers
         fastapi_users = FastAPIUsers[User, UserIdType](
             get_user_manager,
             auth_backends=[authentication_backend],

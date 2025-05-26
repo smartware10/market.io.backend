@@ -9,7 +9,6 @@ from sqlalchemy.orm import mapped_column, Mapped
 
 from core.types.user_id import UserIdType
 from .base import Base
-from .mixins import UserRelationMixin, IdIntPkMixin
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession

@@ -1,21 +1,21 @@
 import logging
 
-# Берем уже настроенный uvicorn-логгер
+# We take the already configured uvicorn logger
 uvicorn_logger = logging.getLogger("uvicorn")
 
-# Создаем свой логгер
+# Create your own logger
 logger = logging.getLogger(__name__)
 
-# Чтобы не было пустого логгирования, копируем обработчики и уровень из uvicorn
+# To avoid empty logging, copy the handlers and level from uvicorn
 logger.handlers = uvicorn_logger.handlers
 logger.setLevel(logging.INFO)
 
-# Чтобы избежать дублирования сообщений
+# To avoid duplicate messages
 logger.propagate = False
 
-# Теперь экспортируем удобные короткие ссылки:
+# Now we export convenient short links
 info = logger.info
 debug = logger.debug
 warning = logger.warning
 error = logger.error
-exception = logger.exception  # для логирования исключений с traceback
+exception = logger.exception  # for logging exceptions with traceback

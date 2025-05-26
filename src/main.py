@@ -2,9 +2,7 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 import uvicorn
-
-from fastapi import FastAPI, Request, status, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from core.config import settings
@@ -22,13 +20,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 main_app = FastAPI(
     title="Market.io",
-    description="Market.io API documentation",
+    description="<h3>Market.io API documentation</h3>",
     version="1.0.0",
     lifespan=lifespan,
 )
 main_app.include_router(router=api_router)
 
-# Добавление CORS middleware
+# Add CORS middleware
 main_app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.middleware.allow_origins,
@@ -36,41 +34,6 @@ main_app.add_middleware(
     allow_methods=settings.middleware.allow_methods,
     allow_headers=settings.middleware.allow_headers,
 )
-
-
-@main_app.exception_handler(403)
-async def forbidden_exception_handler(request: Request, exc: HTTPException):
-    return JSONResponse(
-        status_code=status.HTTP_403_FORBIDDEN,
-        content={
-            "detail": {
-                "code": exc.status_code,
-                "reason": {
-                    "error": exc.detail,
-                    "method": request.method,
-                    "url": str(request.url),
-                },
-            },
-        },
-    )
-
-
-@main_app.exception_handler(404)
-async def not_found_exception_handler(request: Request, exc: HTTPException):
-    return JSONResponse(
-        status_code=status.HTTP_404_NOT_FOUND,
-        content={
-            "detail": {
-                "code": exc.status_code,
-                "reason": {
-                    "error": exc.detail,
-                    "method": request.method,
-                    "url": str(request.url),
-                },
-            },
-        },
-    )
-
 
 if __name__ == "__main__":
     uvicorn.run(
